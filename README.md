@@ -6,6 +6,10 @@ The **Budget Management App** is a mobile application designed to help users eff
 
 This project is ideal for those who want to gain control over their finances and monitor their spending habits. Users can input expenses, categorize them, and get insightful reports on how they are managing their money.
 
+<img src="screenshot/5.png" height="400">
+<img src="screenshot/6.png" height="400">
+<img src="screenshot/7.png" height="400">
+
 ## App Features
 
 - **Expense Input & Tracking:**  
@@ -23,17 +27,20 @@ This project is ideal for those who want to gain control over their finances and
 - **Expense Breakdown:**  
   Visual breakdown of expenses through pie charts and bar graphs, showing how much has been spent in each category.
 
-- **Push Notifications:**  
-  Receive alerts when approaching budget limits or after exceeding them.
-
-- **Secure User Authentication:**  
-  Users can log in and securely store their data with mobile number and OTP authentication.
 
 - **Data Sync:**  
   Sync data across multiple devices with cloud integration, ensuring access to expense records anywhere.
 
-- **Dark Mode:**  
-  The app supports dark mode for better user experience during nighttime use.
+<img src="screenshot/8.png" height="400">
+<img src="screenshot/9.png" height="400">
+<img src="screenshot/10.png" height="400">
+
+
+## Contributors
+
+
+[![Shivam-Thorat](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/99466385?v=4&w=150&h=150&mask=circle)](https://github.com/shivammm21)
+[![Varun-Thakare](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/160563687?v=4&w=150&h=150&mask=circle)](https://github.com/varunthakare)
 
 ## Technologies Used
 
@@ -69,19 +76,57 @@ This project is ideal for those who want to gain control over their finances and
    cd budget-app
 2. **Install Dependencies :**
    ```bash
-   flutter pub get
-   
+   flutter pub get  
 3. **Run the App :**
    ```bash
-   flutter run
-      
+   flutter run    
 4. **Backend Setup :**
-   - **Ensure you have Java and MySQL installed.**  
-   - **Set up the backend by running the Spring Boot application on your local machine**  
-   - **Configure the database connection in the application.properties file for MySQL.**  
+   - **Step 1: Java JDK Installation**<br>
+      **Download and install Java JDK (Java Development Kit) version 11 or above from the <a href src="https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html">official Oracle website</a>.**
 
+   - **After installation, verify the installation by running**  
+   ```bash
+   java -version 
+- **Step 2: Spring Boot Setup**<br>
+    - **Ensure Spring Boot is set up correctly. You can create a Spring Boot project using <a href="https://start.spring.io/">Spring Initializr</a> or set it up in your preferred IDE like IntelliJ IDEA.**
+    - **To run the Spring Boot application, make sure you have Maven or Gradle installed, or let your IDE handle the build process.**
+    - **Configure the Database: In your Spring Boot project, locate the application.properties or application.yml file and set the MySQL connection details as shown below:**
+        ```bash
+          spring.datasource.url=jdbc:mysql://localhost:3306/budget_app_db
+          spring.datasource.username=your_mysql_username
+          spring.datasource.password=your_mysql_password
+          spring.jpa.hibernate.ddl-auto=update
+          spring.jpa.show-sql=true
+    - **Start the Spring Boot backend:**
+        ```bash
+            ./mvnw spring-boot:run   # For Maven projects
+            ./gradlew bootRun         # For Gradle projects
+- **Step 3: MySQL Setup**<br> 
+    - **Download and install MySQL if you don’t already have it installed. You can download MySQL from the official website.**
+    - **Create a database:**
+      ```bash
+          CREATE DATABASE budget_app_db;
 5. **API Testing :**<br>
-     Use Postman to test the API endpoints and ensure the backend is working properly.
+     - **Use Postman to test the API endpoints provided by the Spring Boot backend. You can send GET, POST, PUT, and DELETE requests to verify if the backend is interacting with the database and performing operations correctly.**
+    - Example API endpoint testing with Postman
+        - GET /expenses – Fetch all user expenses.
+        - POST /expenses – Add a new expense entry.
+
+ ### Java JDK & Spring Boot Version Details
+    
+The backend requires Java JDK 11 or later. Java 11 is an LTS (Long-Term Support) version, making it suitable for production applications.
+
+Spring Boot Version:
+The backend is built using Spring Boot 2.7.x or higher. Spring Boot provides a simple and streamlined way to create production-ready Spring applications with embedded web servers like Tomcat or Jetty.
+
+Dependencies Used in Spring Boot:
+
+Spring Web: To create RESTful web services.
+Spring Data JPA: To interact with the MySQL database using Java Persistence API (JPA).
+MySQL Connector: For connecting the Spring Boot application to a MySQL database.
+
+
+
 
 
 
