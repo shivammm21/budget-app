@@ -4,7 +4,7 @@
             "outputFile": "com.example.budget.app-mergeDebugResources-24:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/home/jarvis/Documents/GitHub/budget-app/android/app/src/main/res/values-night/styles.xml",
+                    "source": "C:\\Users\\Admin\\Documents\\GitHub\\budget-app\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

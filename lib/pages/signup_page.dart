@@ -35,7 +35,7 @@ class SignupPage extends StatelessWidget {
     }
 
     Future<void> _registerUser() async {
-      final url = Uri.parse('http://localhost:8080/api/register');
+      final url = Uri.parse('http://192.168.31.230:8080/api/register');
       final headers = {'Content-Type': 'application/json'};
 
       // Create a user data object to send to the backend

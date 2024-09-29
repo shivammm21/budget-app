@@ -4,7 +4,7 @@
             "outputFile": "com.example.budget.app-mergeDebugResources-24:/values-sl/values-sl.xml",
             "map": [
                 {
-                    "source": "/home/jarvis/.gradle/caches/transforms-3/c666c258fca39b3353b46678a6b928ab/transformed/core-1.13.1/res/values-sl/values-sl.xml",
+                    "source": "C:\\Users\\Admin\\.gradle\\caches\\transforms-3\\c666c258fca39b3353b46678a6b928ab\\transformed\\core-1.13.1\\res\\values-sl\\values-sl.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
