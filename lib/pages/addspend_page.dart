@@ -23,6 +23,8 @@ class _AddSpendPageState extends State<AddSpendPage> {
   String selectedCategory = 'Travel';
   List<String> spendCategories = ['Travel', 'Food', 'Rent', 'Light Bill', 'EMI', 'Other'];
   bool _showOtherField = false;
+  String otherCategory = ''; // Variable to hold the 'Other' category input
+  String errorMessage = ''; // Variable to hold error messages
 
   void _incrementAmount() {
     setState(() {
@@ -43,9 +45,27 @@ class _AddSpendPageState extends State<AddSpendPage> {
   Future<void> _addSpend() async {
     String username = widget.name;
 
+    // Validate inputs
+    if (amount <= 0) {
+      setState(() {
+        errorMessage = 'Please enter a valid amount.';
+      });
+      return;
+    }
+    
+    // If 'Other' category is selected, validate its input
+    if (selectedCategory == 'Other' && otherCategory.isEmpty) {
+      setState(() {
+        errorMessage = 'Please specify the other category.';
+      });
+      return;
+    }
+
     Map<String, dynamic> payload = {
       'username': "$username@gmail.com",
       'spendAmt': amount.toString(),
+      'category': selectedCategory == 'Other' ? otherCategory : selectedCategory,
+      'timestamp': DateTime.now().toString(), // Add timestamp
     };
 
     try {
@@ -61,9 +81,17 @@ class _AddSpendPageState extends State<AddSpendPage> {
           backgroundColor: Colors.green,
         ));
 
+        // Pass variables to DashboardPage
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DashboardPage(name: widget.name)),
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              name: widget.name,
+              amount: amount,
+              category: selectedCategory == 'Other' ? otherCategory : selectedCategory,
+              timestamp: DateTime.now(),
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -102,6 +130,15 @@ class _AddSpendPageState extends State<AddSpendPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display error message if any
+            if (errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Text(
+                  errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
             // Remaining Balance Card
             SizedBox(
               width: double.infinity,
@@ -217,6 +254,7 @@ class _AddSpendPageState extends State<AddSpendPage> {
                     setState(() {
                       selectedCategory = newValue!;
                       _showOtherField = selectedCategory == 'Other';
+                      if (!_showOtherField) otherCategory = ''; // Reset otherCategory if not 'Other'
                     });
                   },
                   items: spendCategories.map<DropdownMenuItem<String>>((String value) {
@@ -238,12 +276,21 @@ class _AddSpendPageState extends State<AddSpendPage> {
                 height: _showOtherField ? 60.0 : 0.0,
                 child: _showOtherField
                     ? TextField(
+                        onChanged: (value) {
+                          otherCategory = value; // Update otherCategory as user types
+                        },
                         decoration: InputDecoration(
-                          labelText: 'Other',
+                          labelText: 'Specify other',
+                          labelStyle: const TextStyle(color: Color.fromARGB(137, 0, 0, 0)),
                           border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.deepOrange),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          suffixIcon: const Icon(Icons.money_off, color: Colors.deepOrange),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          suffixIcon: const Icon(Icons.description, color: Colors.deepOrange),
                         ),
                       )
                     : const SizedBox(),
