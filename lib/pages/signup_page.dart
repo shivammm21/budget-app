@@ -4,75 +4,82 @@ import 'dart:convert'; // For encoding/decoding JSON
 import 'dashboard_page.dart'; // Import the DashboardPage
 import 'login_page.dart'; // Import the LoginPage
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final TextEditingController incomeController = TextEditingController();
+  _SignupPageState createState() => _SignupPageState();
+}
 
-    void _showErrorDialog(BuildContext context, String message) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Registration Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+class _SignupPageState extends State<SignupPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController incomeController = TextEditingController();
+   int amount = 0; // Example amount; replace with actual value
+      String category = 'General'; // Example category; replace with actual value
+      DateTime timestamp = DateTime.now();
 
-    Future<void> _registerUser() async {
-      final url = Uri.parse('http://192.168.31.230:8080/api/register');
-      final headers = {'Content-Type': 'application/json'};
+  bool _isPasswordVisible = false; // To toggle password visibility
 
-      // Create a user data object to send to the backend
-      final Map<String, String> body = {
-        'name': nameController.text,
-        'email': emailController.text,
-        'password': passwordController.text,
-        'income': incomeController.text,
-        "spend":"0"
-      };
-
-      try {
-        final response = await http.post(url, headers: headers, body: json.encode(body));
-
-        if (response.statusCode == 201) {
-          // Registration successful, navigate to dashboard
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DashboardPage(
-                name: nameController.text, // Passing the name to the dashboard
-              ),
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Registration Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
             ),
-          );
-        } else {
-          // Handle error (e.g., email already exists)
-          final message = response.body;
-          _showErrorDialog(context, message);
-        }
-      } catch (e) {
-        print('Error registering user: $e');
-        _showErrorDialog(context, 'Error registering user.');
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _registerUser() async {
+    final url = Uri.parse('http://192.168.31.230:8080/api/register');
+    final headers = {'Content-Type': 'application/json'};
+
+    final Map<String, String> body = {
+      'name': nameController.text,
+      'email': emailController.text,
+      'password': passwordController.text,
+      'income': incomeController.text,
+    };
+
+    try {
+      final response = await http.post(url, headers: headers, body: json.encode(body));
+
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
+              name: nameController.text,
+              amount: amount,
+              category: category,
+               timestamp: timestamp,
+            ),
+          ),
+        );
+      } else {
+        final message = response.body;
+        _showErrorDialog(context, message);
       }
+    } catch (e) {
+      print('Error registering user: $e');
+      _showErrorDialog(context, 'Error registering user.');
     }
+  }
 
-
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
@@ -85,7 +92,6 @@ class SignupPage extends StatelessWidget {
               ),
             ),
           ),
-          // Input fields and Buttons
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -93,7 +99,7 @@ class SignupPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 250), // Top margin for fields
+                  const SizedBox(height: 250),
                   // Name Input Field
                   TextField(
                     controller: nameController,
@@ -111,7 +117,7 @@ class SignupPage extends StatelessWidget {
                       suffixIcon: const Icon(Icons.person, color: Colors.deepOrange),
                     ),
                   ),
-                  const SizedBox(height: 25), // Space between Name and Email fields
+                  const SizedBox(height: 25),
                   // Email Input Field
                   TextField(
                     controller: emailController,
@@ -130,8 +136,8 @@ class SignupPage extends StatelessWidget {
                     ),
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 25), // Space between Email and Password fields
-                  // Password Input Field
+                  const SizedBox(height: 25),
+                  // Password Input Field with show/hide icon
                   TextField(
                     controller: passwordController,
                     decoration: InputDecoration(
@@ -145,11 +151,21 @@ class SignupPage extends StatelessWidget {
                         borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      suffixIcon: const Icon(Icons.lock, color: Colors.deepOrange),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.deepOrange,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible, // Toggle between showing/hiding password
                   ),
-                  const SizedBox(height: 25), // Space between Password and Income fields
+                  const SizedBox(height: 25),
                   // Monthly Income Input Field
                   TextField(
                     controller: incomeController,
@@ -168,11 +184,11 @@ class SignupPage extends StatelessWidget {
                     ),
                     keyboardType: TextInputType.number,
                   ),
-                  const SizedBox(height: 37), // Space between fields and buttons
+                  const SizedBox(height: 37),
                   // Sign Up Button
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
+                    child: SizedBox(
                       width: 280,
                       child: ElevatedButton(
                         onPressed: _registerUser,
@@ -195,7 +211,7 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20), // Space between button and text
+                  const SizedBox(height: 20),
                   const Text(
                     'Already Registered?',
                     style: TextStyle(
@@ -203,10 +219,9 @@ class SignupPage extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 0), // Space between texts
+                  const SizedBox(height: 0),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to Login Page
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const LoginPage()),
@@ -220,7 +235,7 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20), // Space at the bottom
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
