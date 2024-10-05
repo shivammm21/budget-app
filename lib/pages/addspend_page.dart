@@ -70,7 +70,7 @@ class _AddSpendPageState extends State<AddSpendPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.31.230:8080/api/add-spend'),
+        Uri.parse('http://localhost:8080/api/add-spend'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(payload),
       );

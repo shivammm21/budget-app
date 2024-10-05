@@ -7,10 +7,13 @@ import com.budget.budget.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -24,6 +27,9 @@ public class PageController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserData userData) {
@@ -91,6 +97,30 @@ public class PageController {
 
         return ResponseEntity.ok(dashboardData);
     }
+
+    @GetMapping("/dashboard/history/{username}")
+    public ResponseEntity<List<Map<String, Object>>> getUserHistory(@PathVariable String username) {
+        String tableName = "expenses_" + username; // Dynamically setting the table name based on the username
+
+        String query = "SELECT * FROM " + tableName; // SQL query to fetch data
+
+        List<Map<String, Object>> history = new ArrayList<>();
+
+        try {
+            List<Map<String, Object>> results = jdbcTemplate.queryForList(query);
+
+            if (!results.isEmpty()) {
+                for (Map<String, Object> row : results) {
+                    history.add(row);
+                }
+            }
+            return ResponseEntity.ok(history);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // In case of error
+        }
+    }
+
 
 
 

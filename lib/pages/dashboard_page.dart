@@ -44,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _fetchDashboardData() async {
-    final url = Uri.parse('http://192.168.31.230:8080/api/dashboard/${widget.name}');
+    final url = Uri.parse('http://localhost:8080/api/dashboard/${widget.name}');
 
     try {
       final response = await http.get(url);
@@ -68,9 +68,36 @@ class _DashboardPageState extends State<DashboardPage> {
   // Method to handle navigation between tabs
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Update the selected index on tab change
+      _selectedIndex = index;
+      if (index == 1) {
+        // Fetch history data when the History tab is selected
+        _fetchHistoryData();
+      }
     });
   }
+
+
+  List<Map<String, dynamic>> historyData = [];
+
+  Future<void> _fetchHistoryData() async {
+    final url = Uri.parse('http://localhost:8080/api/dashboard/history/${widget.name}');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        setState(() {
+          historyData = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        throw Exception('Failed to load history data');
+      }
+    } catch (e) {
+      print('Error fetching history data: $e');
+    }
+  }
+
 
   // Method to show the logout confirmation dialog
   void _showLogoutConfirmationDialog(BuildContext context) {
@@ -252,60 +279,60 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
             );
     } else if (_selectedIndex == 1) {
-      
-return Container(
-  width: double.infinity,
-  color: Colors.white, // Change background color to white
-  child: SingleChildScrollView(
-    child: Column(
-      children: [
-        // Month Card
-        Card(
-          margin: const EdgeInsets.all(16.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          elevation: 2.0,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Removed the month display
-                const SizedBox(height: 10),
-                Text(
-                  'Category: $category',
-                  style: const TextStyle(fontSize: 16),
+      if (historyData.isEmpty) {
+        // Fetch the history data only if it's not already fetched
+        _fetchHistoryData();
+        return const Center(child: CircularProgressIndicator()); // Show loading spinner
+      }
+      return Container(
+        width: double.infinity,
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Column(
+            children: historyData.isEmpty
+                ? [const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('No history available'),
+            )]
+                : historyData.map((history) {
+              String category = history['category'];
+              int amount = history['amount'];
+              DateTime timestamp = DateTime.parse(history['timestamp']); // Assuming the timestamp is in ISO format
+
+              return Card(
+                margin: const EdgeInsets.all(16.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                Text(
-                  'Amount: ₹$amount',
-                  style: const TextStyle(fontSize: 16),
+                elevation: 2.0,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Category: $category', style: const TextStyle(fontSize: 16)),
+                      Text('Amount: ₹$amount', style: const TextStyle(fontSize: 16)),
+                      Text('Date: ${timestamp.day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.month)} ${timestamp.year}',
+                          style: const TextStyle(fontSize: 16)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            '${timestamp.hour > 12 ? timestamp.hour - 12 : timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.hour >= 12 ? 'PM' : 'AM'}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                  'Date: ${timestamp.day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.month)} ${timestamp.year}', // Formatted date without extra numbers
-                  style: const TextStyle(fontSize: 16),
-                ),
-                // Row to align time to the right side of the card
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end, // Align to the right
-                  children: [
-                    Text(
-                      '${timestamp.hour > 12 ? timestamp.hour - 12 : timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.hour >= 12 ? 'PM' : 'AM'}', // Format time
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              );
+            }).toList(),
           ),
         ),
-      ],
-    ),
-  ),
-);
-
-
-    } else {
+      );
+    }
+    else {
       return Container(
   color: Colors.grey[200],
   padding: const EdgeInsets.symmetric(vertical: 120.0, horizontal: 20.0),
