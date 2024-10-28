@@ -255,7 +255,7 @@ class _DashboardPageState extends State<DashboardPage> {
       
 return Container(
   width: double.infinity,
-  color: Colors.white, // Change background color to white
+  color: Colors.white,
   child: SingleChildScrollView(
     child: Column(
       children: [
@@ -271,26 +271,32 @@ return Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Removed the month display
                 const SizedBox(height: 10),
-                Text(
-                  'Category: $category',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Text(
-                  'Amount: ₹$amount',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Text(
-                  'Date: ${timestamp.day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.month)} ${timestamp.year}', // Formatted date without extra numbers
-                  style: const TextStyle(fontSize: 16),
-                ),
-                // Row to align time to the right side of the card
+                // Row to align Amount to the right
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end, // Align to the right
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '${timestamp.hour > 12 ? timestamp.hour - 12 : timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.hour >= 12 ? 'PM' : 'AM'}', // Format time
+                      '$category',
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                    Text(
+                      '₹$amount',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Row to align Date on the left and Time on the right
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${timestamp.day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.month)} ${timestamp.year}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    Text(
+                      '${timestamp.hour > 12 ? timestamp.hour - 12 : timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.hour >= 12 ? 'PM' : 'AM'}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ],
