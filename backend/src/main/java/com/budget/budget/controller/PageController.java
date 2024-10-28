@@ -1,7 +1,7 @@
 package com.budget.budget.controller;
 
-
 import com.budget.budget.model.AddSpend;
+import com.budget.budget.model.Participant;
 import com.budget.budget.model.UserData;
 import com.budget.budget.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 
 @RestController
 @RequestMapping("/api")
@@ -62,7 +61,6 @@ public class PageController {
         String username = email.substring(0, email.indexOf('@'));
 
         if (userService.createUserTable(username)) {
-
             userService.saveUser(userData);
             return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
         } else {
@@ -82,6 +80,62 @@ public class PageController {
         }
     }
 
+    @PostMapping("/split-expense")
+    public ResponseEntity<String> splitExpense(@RequestBody Map<String, Object> requestData) {
+        // Validate that all required fields are present
+        if (!requestData.containsKey("payerUsername") || requestData.get("payerUsername") == null) {
+            return new ResponseEntity<>("Missing 'payerUsername' in request data.", HttpStatus.BAD_REQUEST);
+        }
+        if (!requestData.containsKey("totalAmount") || requestData.get("totalAmount") == null) {
+            return new ResponseEntity<>("Missing 'totalAmount' in request data.", HttpStatus.BAD_REQUEST);
+        }
+        if (!requestData.containsKey("participants") || requestData.get("participants") == null) {
+            return new ResponseEntity<>("Missing 'participants' in request data.", HttpStatus.BAD_REQUEST);
+        }
+        System.out.println(requestData.containsKey("place"));
+        System.out.println(requestData.containsKey("category"));
+        try {
+            String payerUsername = requestData.get("payerUsername").toString();
+            double totalAmount = Double.parseDouble(requestData.get("totalAmount").toString());
+            String place = requestData.get("place").toString();
+            String category = requestData.get("category").toString();
+            System.out.println(place);
+            System.out.println(category);
+            // Check that participants is a List
+            Object participantsObj = requestData.get("participants");
+            if (!(participantsObj instanceof List)) {
+                return new ResponseEntity<>("Invalid format for 'participants'. Expected a list.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Cast participants to List<String> safely
+            List<String> participants = new ArrayList<>();
+            for (Object participant : (List<?>) participantsObj) {
+                if (participant instanceof String) {
+                    participants.add((String) participant);
+                } else {
+                    return new ResponseEntity<>("Invalid format for 'participants'. Each participant must be a string.", HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            boolean isSplitSuccessful = userService.splitExpense(payerUsername, place,category, totalAmount, participants);
+            if (isSplitSuccessful) {
+                return new ResponseEntity<>("Expense split successfully.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Error splitting expense.", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Invalid format for 'totalAmount'.", HttpStatus.BAD_REQUEST);
+        } catch (ClassCastException e) {
+            return new ResponseEntity<>("Invalid format for 'participants'. Expected a list of usernames.", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An error occurred while splitting the expense.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
     @GetMapping("/dashboard/{username}")
     public ResponseEntity<Map<String, String>> getDashboardData(@PathVariable String username) {
         String totalSpend = String.valueOf(userService.getTotalSpend(username));
@@ -100,9 +154,7 @@ public class PageController {
 
     @GetMapping("/dashboard/history/{username}")
     public ResponseEntity<List<Map<String, Object>>> getUserHistory(@PathVariable String username) {
-        String tableName = "expenses_" + username; // Dynamically setting the table name based on the username
-
-        String query = "SELECT * FROM " + tableName; // SQL query to fetch data
+        String query = "SELECT * FROM " + username;
 
         List<Map<String, Object>> history = new ArrayList<>();
 
@@ -110,19 +162,12 @@ public class PageController {
             List<Map<String, Object>> results = jdbcTemplate.queryForList(query);
 
             if (!results.isEmpty()) {
-                for (Map<String, Object> row : results) {
-                    history.add(row);
-                }
+                history.addAll(results);
             }
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // In case of error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-
-
-
-
 }
