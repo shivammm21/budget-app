@@ -1,0 +1,53 @@
+{
+	"info": {
+		"_postman_id": "bed16db0-5345-48d1-b05a-a2835df2c936",
+		"name": "Display",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37612501"
+	},
+	"item": [
+		{
+			"name": "dashboard",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/dashboard/shivamthorat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"dashboard",
+						"shivamthorat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/dashboard/history/shivamthorat",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"dashboard",
+						"history",
+						"shivamthorat"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

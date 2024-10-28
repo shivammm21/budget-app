@@ -1,0 +1,68 @@
+{
+	"info": {
+		"_postman_id": "ec3ebba6-696a-4bfa-b6d1-4a19cdfd9f7d",
+		"name": "Add Spend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37612501"
+	},
+	"item": [
+		{
+			"name": "add-spend(solo)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"spendAmt\": \"1000\",\n    \"place\": \"Restaurant\",\n    \"category\": \"Food\",\n    \"username\": \"shivamthorat@gmail.com\",\n    \"participants\": []\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/add-spend",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"add-spend"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "split-expense",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"payerUsername\": \"shivamthorat@gmail.com\",\n    \"totalAmount\": 12000.0,\n    \"place\":\"Restaurant\",\n    \"category\":\"Food\",\n    \"participants\": [\"varunthakare@gmail.com\", \"pranitdhumal@gmail.com\"]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/split-expense",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"split-expense"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
