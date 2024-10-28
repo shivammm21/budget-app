@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/dashboard/shivamthorat",
+					"raw": "http://localhost:8080/api/dashboard/varunthakare",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -21,7 +21,7 @@
 					"path": [
 						"api",
 						"dashboard",
-						"shivamthorat"
+						"varunthakare"
 					]
 				}
 			},

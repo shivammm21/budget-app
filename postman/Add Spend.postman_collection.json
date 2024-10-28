@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"spendAmt\": \"1000\",\n    \"place\": \"Restaurant\",\n    \"category\": \"Food\",\n    \"username\": \"shivamthorat@gmail.com\",\n    \"participants\": []\n}\n",
+					"raw": "{\n    \"spendAmt\": \"1000\",\n    \"place\": \"Restaurant\",\n    \"category\": \"Food\",\n    \"username\": \"varunthakare@gmail.com\",\n    \"participants\": []\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -59,6 +59,35 @@
 					"path": [
 						"api",
 						"split-expense"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pay-Split-Spend",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"varunthakare\",\n    \"payerName\": \"shivamthorat\",\n    \"category\": \"Food\",\n    \"place\": \"Restaurant\",\n    \"spendAmt\": 4000.0\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/pay-split",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pay-split"
 					]
 				}
 			},

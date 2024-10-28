@@ -134,23 +134,52 @@ public class PageController {
     }
 
 
+    @PostMapping("/pay-split")
+    public ResponseEntity<Map<String, String>> paySplit(@RequestBody Map<String, Object> requestData) {
+        String username = (String) requestData.get("username");
+
+        //List<Integer> entryIds = (List<Integer>) requestData.get("entryIds"); // IDs of entries to mark as paid
+        String payerName = (String) requestData.get("payerName"); // Extract payerName from request
+        String category = (String) requestData.get("category"); // Extract category from request
+        String place = (String) requestData.get("place"); // Extract place from request
+        double spendAmt = ((Number) requestData.get("spendAmt")).doubleValue(); // Extract spendAmt from request
+
+        // Call the updated service method with the new parameters
+        boolean updateSuccessful = userService.updatePendingPayments(username, payerName, category, place, spendAmt);
+
+        Map<String, String> response = new HashMap<>();
+        if (updateSuccessful) {
+            response.put("message", "Payments updated successfully.");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("message", "Failed to update payments.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
 
     @GetMapping("/dashboard/{username}")
-    public ResponseEntity<Map<String, String>> getDashboardData(@PathVariable String username) {
+    public ResponseEntity<Map<String, Object>> paySplitSpend(@PathVariable String username) {
         String totalSpend = String.valueOf(userService.getTotalSpend(username));
 
         String[] data = userService.getRemainingBalance(username);
         String remainingBalance = data[0];
         String name = data[1];
 
-        Map<String, String> dashboardData = new HashMap<>();
+        List<Map<String, Object>> pendingPayments = userService.getPendingPayments(username);
+
+        Map<String, Object> dashboardData = new HashMap<>();
         dashboardData.put("totalSpend", totalSpend);
         dashboardData.put("remainingBalance", remainingBalance);
         dashboardData.put("userName", name);
+        dashboardData.put("pendingPayments", pendingPayments);
 
         return ResponseEntity.ok(dashboardData);
     }
+
+
+
 
     @GetMapping("/dashboard/history/{username}")
     public ResponseEntity<List<Map<String, Object>>> getUserHistory(@PathVariable String username) {
