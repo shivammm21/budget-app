@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart'; 
 import 'addspend_page.dart';
-import 'login_page.dart'; // Import the login page for logout
+import 'login_page.dart';
+import 'split_page.dart'; // Import the login page for logout
 
 class DashboardPage extends StatefulWidget {
   final String name;
@@ -44,7 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _fetchDashboardData() async {
-    final url = Uri.parse('http://localhost:8080/api/dashboard/${widget.name}');
+    final url = Uri.parse('http://192.168.31.230:8080/api/dashboard/${widget.name}');
 
     try {
       final response = await http.get(url);
@@ -80,7 +81,7 @@ class _DashboardPageState extends State<DashboardPage> {
   List<Map<String, dynamic>> historyData = [];
 
   Future<void> _fetchHistoryData() async {
-    final url = Uri.parse('http://localhost:8080/api/dashboard/history/${widget.name}');
+    final url = Uri.parse('http://192.168.31.230:8080/api/dashboard/history/${widget.name}');
 
     try {
       final response = await http.get(url);
@@ -275,6 +276,40 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: SizedBox(
+                      width: 280,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SplitPage(name: widget.name, remainingBalance: remainingBalance),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 15.0),
+                          child: Text(
+                            'Smart Split',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -296,8 +331,8 @@ class _DashboardPageState extends State<DashboardPage> {
             )]
                 : historyData.map((history) {
               String category = history['category'];
-              int amount = history['amount'];
-              DateTime timestamp = DateTime.parse(history['timestamp']); // Assuming the timestamp is in ISO format
+              String amount = history['spendAmt'];
+              DateTime timestamp = DateTime.parse(history['created_at']); // Assuming the timestamp is in ISO format
 
               return Card(
                 margin: const EdgeInsets.all(16.0),
