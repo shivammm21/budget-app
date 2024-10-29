@@ -43,7 +43,7 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _registerUser() async {
-    final url = Uri.parse('http://localhost:8080/api/register');
+    final url = Uri.parse('http://192.168.31.230:8080/api/register');
     final headers = {'Content-Type': 'application/json'};
 
     final Map<String, String> body = {

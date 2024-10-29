@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // Login method
   Future<void> _login() async {
-    final String apiUrl = "http://localhost:8080/api/login";
+    final String apiUrl = "http://192.168.31.230:8080/api/login";
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
