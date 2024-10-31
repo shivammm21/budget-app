@@ -183,7 +183,7 @@ public class PageController {
 
     @GetMapping("/dashboard/history/{username}")
     public ResponseEntity<List<Map<String, Object>>> getUserHistory(@PathVariable String username) {
-        String query = "SELECT * FROM " + username;
+        String query = "SELECT * FROM " + username + " WHERE payerbill = 'True'";
 
         List<Map<String, Object>> history = new ArrayList<>();
 
