@@ -27,6 +27,8 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   double totalSpend = 0;
   double remainingBalance = 0;
+  double userMonthlyIncome = 0;
+  late List<Map<String, dynamic>> pendingPayments;
   bool isLoading = true;
   late String name;
   late String category; // Add category as a property
@@ -42,7 +44,26 @@ class _DashboardPageState extends State<DashboardPage> {
     amount = widget.amount; // Initialize amount
     timestamp = widget.timestamp; // Initialize timestamp
     _fetchDashboardData();
+    checkAndResetBalance();
   }
+  
+  Future<void> checkAndResetBalance() async {
+  final prefs = await SharedPreferences.getInstance();
+  int? lastMonthUpdated = prefs.getInt('lastMonthUpdated');
+  int currentMonth = DateTime.now().month;
+
+  // Check if it's a new month
+  if (lastMonthUpdated != currentMonth) {
+    // Update remaining balance to the monthly income
+    setState(() {
+      remainingBalance = userMonthlyIncome; // Set to the stored monthly income
+    });
+
+    // Store the current month as the last updated month
+    prefs.setInt('lastMonthUpdated', currentMonth);
+  }
+}
+
 
   Future<void> _fetchDashboardData() async {
     final url = Uri.parse('http://192.168.31.230:8080/api/dashboard/${widget.name}');
@@ -55,6 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
         setState(() {
           totalSpend = double.parse(data['totalSpend']);
           remainingBalance = double.parse(data['remainingBalance']);
+          pendingPayments = List<Map<String, dynamic>>.from(data['pendingPayments'] ?? []);
           name = data['userName'];
           isLoading = false;
         });
@@ -90,6 +112,9 @@ class _DashboardPageState extends State<DashboardPage> {
         List<dynamic> data = json.decode(response.body);
         setState(() {
           historyData = List<Map<String, dynamic>>.from(data);
+          if(historyData.isEmpty){
+
+          }
         });
       } else {
         throw Exception('Failed to load history data');
@@ -140,13 +165,71 @@ class _DashboardPageState extends State<DashboardPage> {
   );
 }
 
+Widget _buildPaymentCard(Map<String, dynamic> payment) {
+  String category = payment['category'] as String;
+  int amount = double.parse(payment['spendAmt'].toString()).round();
+  String payerUser = payment['payeruser'] as String;
+  String place = payment['place'] as String;
+
+  return Container(
+    width: double.infinity, // Make the card full width
+    child: Card(
+      color: Colors.white, // Set the card color to white
+      margin: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      elevation: 2.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Category: $category', style: const TextStyle(fontSize: 16)),
+                  Text('Amount: ₹$amount', style: const TextStyle(fontSize: 16)),
+                  Text('Place: $place', style: const TextStyle(fontSize: 16)),
+                  Text('Payer: $payerUser', style: const TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Add functionality for the button here
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange, // Deep orange color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                elevation: 10, // Shadow
+              ),
+              child: const Text(
+                'Spend',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
 
   // Define the different bodies for each tab
   Widget _buildBody() {
     if (_selectedIndex == 0) {
       return isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Container(
+          : SingleChildScrollView(
+          child: Container(
               color: Colors.grey[200],
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -242,7 +325,34 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 16.0), // Spacing between cards
+                  Container(
+                    margin: const EdgeInsets.only(left: 16.0), // Add left margin
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Pending Payment',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20.0, // Same font size as 'Remaining' text
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                const SizedBox(height: 10),
+                pendingPayments.isEmpty
+                    ? const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('No pending payments'),
+                      )
+                    : Column(
+                        children: pendingPayments.map((payment) {
+                          return _buildPaymentCard(payment);
+                        }).toList(),
+                      ),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: SizedBox(
@@ -292,7 +402,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
+                          backgroundColor: const Color.fromARGB(255, 34, 174, 255),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -312,63 +422,89 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                 ],
               ),
-            );
+            )
+          );
     } else if (_selectedIndex == 1) {
       if (historyData.isEmpty) {
         // Fetch the history data only if it's not already fetched
         _fetchHistoryData();
-        return const Center(child: CircularProgressIndicator()); // Show loading spinner
       }
-      return Container(
-        width: double.infinity,
-        color: Colors.white,
-        child: SingleChildScrollView(
-          child: Column(
-            children: historyData.isEmpty
-                ? [const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('No history available'),
-            )]
-                : historyData.map((history) {
-              String category = history['category'];
-              String amount = history['spendAmt'];
-              DateTime timestamp = DateTime.parse(history['created_at']); // Assuming the timestamp is in ISO format
+      return SingleChildScrollView( 
+          child: Container(
+          width: double.infinity,
+          color: const Color.fromARGB(255, 254, 247, 255),
+          child: SingleChildScrollView(
+            child: Column(
+              children: historyData.isEmpty ? [
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text('No history available'),
+                ),
+              ]
+            : historyData.reversed.toList().map((history) { // Convert to list here
+                String category = history['category'];
+                String amount = history['spendAmt'];
+                DateTime timestamp = DateTime.parse(history['created_at']); // Assuming the timestamp is in ISO format
 
-              return Card(
-                margin: const EdgeInsets.all(16.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 2.0,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Category: $category', style: const TextStyle(fontSize: 16)),
-                      Text('Amount: ₹$amount', style: const TextStyle(fontSize: 16)),
-                      Text('Date: ${timestamp.day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.month)} ${timestamp.year}',
-                          style: const TextStyle(fontSize: 16)),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${timestamp.hour > 12 ? timestamp.hour - 12 : timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')} ${timestamp.hour >= 12 ? 'PM' : 'AM'}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ],
+                return Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                ),
-              );
-            }).toList(),
+                  elevation: 2.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        // Row to align Amount to the right
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              category,
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                            Text(
+                              '-₹$amount',
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        // Row to align Date on the left and Time on the right
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${timestamp.toLocal().day.toString().padLeft(2, '0')} ${_getMonthShort(timestamp.toLocal().month)} ${timestamp.toLocal().year}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            Text(
+                              '${(timestamp.toLocal().hour % 12 == 0 ? 12 : timestamp.toLocal().hour % 12)}:${timestamp.toLocal().minute.toString().padLeft(2, '0')} ${timestamp.toLocal().hour >= 12 ? 'PM' : 'AM'}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
-        ),
+        )
       );
     }
     else {
-      return Container(
+      return SingleChildScrollView(
+        child: Container(
   color: Colors.grey[200],
   padding: const EdgeInsets.symmetric(vertical: 120.0, horizontal: 20.0),
   child: Center(
@@ -387,6 +523,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 borderRadius: BorderRadius.circular(30),
               ),
               padding: const EdgeInsets.symmetric(vertical: 15.0),
+              elevation: 10,
             ),
             icon: const Icon(
               Icons.logout, // Add logout icon
@@ -405,7 +542,8 @@ class _DashboardPageState extends State<DashboardPage> {
       ],
     ),
   ),
-);
+)
+      );
 
     }
   }

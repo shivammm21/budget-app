@@ -124,7 +124,8 @@ class _AddSpendPageState extends State<AddSpendPage> {
         ),
         centerTitle: true,
       ),
-      body: Container(
+      body: SingleChildScrollView(
+      child: Container(
         color: Colors.grey[200],
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -322,6 +323,7 @@ class _AddSpendPageState extends State<AddSpendPage> {
           ],
         ),
       ),
+    )
     );
   }
 }

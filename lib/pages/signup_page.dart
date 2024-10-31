@@ -57,14 +57,16 @@ class _SignupPageState extends State<SignupPage> {
       final response = await http.post(url, headers: headers, body: json.encode(body));
 
       if (response.statusCode == 201) {
+        String email = emailController.text;
+        String username = email.split('@')[0];
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DashboardPage(
-              name: nameController.text,
+              name: username,
               amount: amount,
               category: category,
-               timestamp: timestamp,
+              timestamp: timestamp,
             ),
           ),
         );
