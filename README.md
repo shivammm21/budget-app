@@ -6,7 +6,7 @@ The **Budget Management App** is a mobile application designed to help users eff
 
 This project is ideal for those who want to gain control over their finances and monitor their spending habits. Users can input expenses, categorize them, and get insightful reports on how they are managing their money.
 
-<img src="screenshot/5.png" height="400"><img src="screenshot/6.png" height="400"><img src="screenshot/7.png" height="400">
+<img src="screenshot/1.png" height="400"><img src="screenshot/2.png" height="400"><img src="screenshot/3.png" height="400">
 
 ## App Features
 
@@ -29,7 +29,7 @@ This project is ideal for those who want to gain control over their finances and
 - **Data Sync:**  
   Sync data across multiple devices with cloud integration, ensuring access to expense records anywhere.
 
-<img src="screenshot/8.png" height="400"><img src="screenshot/9.png" height="400"><img src="screenshot/10.png" height="400">
+<img src="screenshot/4.png" height="400"><img src="screenshot/5.png" height="400">
 
 
 ## Contributors
@@ -37,6 +37,9 @@ This project is ideal for those who want to gain control over their finances and
 
 [![Shivam-Thorat](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/99466385?v=4&w=150&h=150&mask=circle)](https://github.com/shivammm21)
 [![Varun-Thakare](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/160563687?v=4&w=150&h=150&mask=circle)](https://github.com/varunthakare)
+
+
+<img src="screenshot/6.png" height="400">
 
 ## Technologies Used
 
