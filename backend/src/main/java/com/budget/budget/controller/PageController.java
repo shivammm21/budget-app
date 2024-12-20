@@ -1,5 +1,6 @@
 package com.budget.budget.controller;
 
+import com.budget.budget.config.AppConfig;
 import com.budget.budget.model.AddSpend;
 import com.budget.budget.model.Participant;
 import com.budget.budget.model.UserData;
@@ -30,12 +31,18 @@ public class PageController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private AppConfig appConfig;
+
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserData userData) {
         String email = userData.getEmail();
         String password = userData.getPassword();
 
-        UserData existingUser = userService.findByEmail(email);
+        System.out.println(appConfig.encryptEmail(email));
+        //System.out.println(appConfig.decryptEmail("e5w5ACap1u8qwmunZ4zipOx7crCUSRYLcGn2bOFQTEY="));
+
+        UserData existingUser = userService.findByEmail(appConfig.encryptEmail(email));
 
         if (existingUser == null) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
@@ -55,14 +62,20 @@ public class PageController {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
+        String budgetId = userData.getEmail().substring(0, userData.getEmail().indexOf('@'));
+
+        userData.setBudgetId(appConfig.encryptUsername(budgetId+"@budget"));
+        userData.setName(appConfig.encryptName(userData.getName()));
+        userData.setEmail(appConfig.encryptEmail(userData.getEmail()));
         userData.setPassword(passwordEncoder.encode(userData.getPassword()));
+        userData.setIncome(appConfig.encryptAmount(userData.getIncome()));
 
         String email = userData.getEmail();
-        String username = email.substring(0, email.indexOf('@'));
+        //String username = email.substring(0, email.indexOf('@'));
 
-        if (userService.createUserTable(username)) {
+        if (userService.createUserTable(budgetId)) {
             userService.saveUser(userData);
-            return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
+            return new ResponseEntity<>("User registered successfully. Your budget ID is "+appConfig.decryptUsername(userData.getBudgetId()), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("Error creating user table", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -70,9 +83,9 @@ public class PageController {
 
     @PostMapping("/add-spend")
     public ResponseEntity<String> addSpend(@RequestBody AddSpend addSpend) {
-        String username = addSpend.getUsername().substring(0, addSpend.getUsername().indexOf('@'));
 
-        boolean isAdded = userService.addSpend(addSpend, username);
+
+        boolean isAdded = userService.addSpend(addSpend, addSpend.getUsername().substring(0, addSpend.getUsername().indexOf('@')));
         if (isAdded) {
             return ResponseEntity.ok("Spend added successfully.");
         } else {
@@ -161,11 +174,12 @@ public class PageController {
 
     @GetMapping("/dashboard/{username}")
     public ResponseEntity<Map<String, Object>> paySplitSpend(@PathVariable String username) {
-        String totalSpend = String.valueOf(userService.getTotalSpend(username));
+       // String totalSpend = String.valueOf(userService.getTotalSpend(username));
 
         String[] data = userService.getRemainingBalance(username);
         String remainingBalance = data[0];
         String name = data[1];
+        String totalSpend = data[2];
 
         List<Map<String, Object>> pendingPayments = userService.getPendingPayments(username);
 
@@ -190,13 +204,26 @@ public class PageController {
         try {
             List<Map<String, Object>> results = jdbcTemplate.queryForList(query);
 
-            if (!results.isEmpty()) {
-                history.addAll(results);
+            for (Map<String, Object> row : results) {
+                Map<String, Object> decryptedRow = new HashMap<>(row);
+
+                // Decrypt specific fields
+                try {
+                    decryptedRow.put("spendAmt", appConfig.decryptAmount((String) row.get("spendAmt")));
+                    decryptedRow.put("place", appConfig.decryptString((String) row.get("place")));
+                    decryptedRow.put("category", appConfig.decryptString((String) row.get("category")));
+                } catch (Exception e) {
+                    System.out.println("Error decrypting row: " + e.getMessage());
+                }
+
+                history.add(decryptedRow);
             }
+
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 }

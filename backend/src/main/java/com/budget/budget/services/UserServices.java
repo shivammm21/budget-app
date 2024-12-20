@@ -1,5 +1,6 @@
 package com.budget.budget.services;
 
+import com.budget.budget.config.AppConfig;
 import com.budget.budget.model.AddSpend;
 import com.budget.budget.model.Participant;
 import com.budget.budget.model.UserData;
@@ -21,6 +22,9 @@ public class UserServices {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private AppConfig appConfig;
 
     public boolean createUserTable(String username) {
         try {
@@ -81,9 +85,9 @@ public class UserServices {
     public boolean addSpend(AddSpend addSpend, String username) {
         try {
             String insertTableSQL = "INSERT INTO " + username + " (spendAmt, place, category,payeruser, payerbill) VALUES ('" +
-                    addSpend.getSpendAmt() + "', '" +
-                    addSpend.getPlace() + "', '" +
-                    addSpend.getCategory() + "', '" +
+                    appConfig.encryptAmount(addSpend.getSpendAmt()) + "', '" +
+                    appConfig.encryptString(addSpend.getPlace()) + "', '" +
+                    appConfig.encryptString(addSpend.getCategory()) + "', '" +
                     "myself" + "', '" +
                     "True" + "');";
             jdbcTemplate.execute(insertTableSQL);
@@ -96,26 +100,34 @@ public class UserServices {
 
     public double getTotalSpend(String username) {
         try {
-            String sql = "SELECT SUM(spendAmt) FROM " + username + " WHERE payerbill = 'True'";
+            String sql = "SELECT spendAmt FROM " + username + " WHERE payerbill = 'True'";
+            List<String> encryptedAmounts = jdbcTemplate.queryForList(sql, String.class);
 
-            Double sum = jdbcTemplate.queryForObject(sql, Double.class);
-            return (sum != null) ? sum : 0.0;
+            double total = 0.0;
+            for (String encryptedAmt : encryptedAmounts) {
+                String decryptedAmt = appConfig.decryptAmount(encryptedAmt); // Use your decrypt method
+                total += Double.parseDouble(decryptedAmt); // Parse and sum the decrypted values
+            }
+
+            return total;
         } catch (Exception e) {
             System.out.println("Error fetching total spend: " + e.getMessage());
             return 0.0;
         }
     }
 
+
     public String[] getRemainingBalance(String username) {
         try {
-            String email = username + "@gmail.com";
+            String email = appConfig.encryptEmail(username + "@gmail.com");
             String getBudgetSQL = "SELECT income, name FROM user_details WHERE email = ?";
             return jdbcTemplate.queryForObject(getBudgetSQL, new Object[]{email}, (rs, rowNum) -> {
-                double budget = rs.getDouble("income");
-                String name = rs.getString("name");
+                String budget = appConfig.decryptAmount(rs.getString("income"));
+                String name = appConfig.decryptName(rs.getString("name"));
                 double totalSpend = getTotalSpend(username);
-                double remainingBalance = budget - totalSpend;
-                return new String[]{String.valueOf(remainingBalance), name};
+                double remainingBalance = Double.parseDouble(budget) - totalSpend;
+                totalSpend = Double.parseDouble(budget) - remainingBalance;
+                return new String[]{String.valueOf(remainingBalance), name, String.valueOf(totalSpend)};
             });
         } catch (Exception e) {
             System.out.println("Error fetching remaining balance and name: " + e.getMessage());
@@ -158,10 +170,10 @@ public class UserServices {
 
 
     public boolean addUser(String username, double initialOwedAmount,String place,String category,String payerUser) {
-        String insertUserSQL = "INSERT INTO "+username+" (spendAmt,place,category,payeruser) VALUES (?,?,?,?)";
+        String insertUserSQL = "INSERT INTO "+username+" (spendAmt,place,category,payeruser,payerbill) VALUES (?,?,?,?,?)";
 
         try {
-            int rowsAffected = jdbcTemplate.update(insertUserSQL, initialOwedAmount,place,category,payerUser);
+            int rowsAffected = jdbcTemplate.update(insertUserSQL, appConfig.encryptAmount(String.valueOf(initialOwedAmount)),appConfig.encryptName(place),appConfig.encryptString(category),appConfig.encryptName(payerUser),"True");
             return rowsAffected > 0; // Return true if the insert was successful
         } catch (Exception e) {
             System.out.println("Error adding user: " + e.getMessage());
@@ -172,7 +184,7 @@ public class UserServices {
         String insertUserSQL = "INSERT INTO "+username+" (spendAmt,place,category,payeruser,payerbill) VALUES (?,?,?,?,?)";
 
         try {
-            int rowsAffected = jdbcTemplate.update(insertUserSQL, initialOwedAmount,place,category,payerUser,bill);
+            int rowsAffected = jdbcTemplate.update(insertUserSQL, appConfig.encryptAmount(String.valueOf(initialOwedAmount)),appConfig.encryptString(place),appConfig.encryptString(category),appConfig.encryptString(payerUser),bill);
             return rowsAffected > 0; // Return true if the insert was successful
         } catch (Exception e) {
             System.out.println("Error adding user: " + e.getMessage());

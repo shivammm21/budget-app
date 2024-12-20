@@ -7,7 +7,7 @@ public class AddSpend {
     private String spendAmt;
     private String place;
     private String category;
-    private String username;
+    private String budgetId;
     //private String splitUsername;
 
     //public String getSplitUsername() {
@@ -21,11 +21,11 @@ public class AddSpend {
     private List<Participant> participants;
 
     public String getUsername() {
-        return username;
+        return budgetId;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.budgetId = username;
     }
 
     public String getSpendAmt() {
