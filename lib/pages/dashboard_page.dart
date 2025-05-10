@@ -220,7 +220,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
         monthlyIncome = localMonthlyIncome;
         _showIncome = localShowIncome;
         name = widget.name;
-        pendingPayments = []; // Always initialize with empty list in offline mode
+        pendingPayments = []; // Always initiandinglize with empty list in offline mode
         historyData = localTransactions;
         isLoading = false;
       });
@@ -248,6 +248,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   List<Map<String, dynamic>> historyData = [];
 
   Future<void> _fetchHistoryData() async {
+    print(widget.name);
     final url = Uri.parse('http://localhost:8080/api/dashboard/history/${widget.name}');
 
     try {
@@ -354,11 +355,12 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                 ElevatedButton.icon(
                   onPressed: () async {
                     // Call backend to mark as settled
+                    print(widget.name);
                     final response = await http.post(
                       Uri.parse('http://localhost:8080/api/pay-split'),
                       headers: {'Content-Type': 'application/json'},
                       body: jsonEncode({
-                        'username': name, // current user
+                        'username': widget.name, // current user
                         'payerName': payerUser,
                         'category': category,
                         'place': place,
