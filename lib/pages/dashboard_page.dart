@@ -12,6 +12,7 @@ import 'addspend_page.dart';
 import 'login_page.dart';
 import 'split_page.dart'; // Import the login page for logout
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatefulWidget {
   final String name;
@@ -59,6 +60,10 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   bool _isOffline = false;
   String _syncStatus = '';
   String? _historyError;
+
+  // Add state for analysis data
+  List<Map<String, dynamic>> analysisData = [];
+  bool isAnalysisLoading = false;
 
   @override
   void initState() {
@@ -115,6 +120,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
     
     _fetchDashboardData();
     checkAndResetBalance();
+    _fetchAnalysisData();
   }
   
   @override
@@ -330,9 +336,9 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
             Row(
               children: [
                 Container(
@@ -384,9 +390,9 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                   },
                   icon: const Icon(Icons.check_circle, size: 18, color: Colors.white),
                   label: const Text('Settle', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
+              style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.deepOrange,
-                    shape: RoundedRectangleBorder(
+                shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     elevation: 2,
@@ -409,9 +415,9 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                 Text(
                   place,
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w500, fontSize: 15),
-                ),
-              ],
             ),
+          ],
+        ),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -732,46 +738,17 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                     ),
                   ),
                   const SizedBox(height: 16.0), // Spacing between cards
-                  Container(
-                    margin: const EdgeInsets.only(left: 16.0), // Add left margin
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Pending Payment',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20.0, // Same font size as 'Remaining' text
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                const SizedBox(height: 10),
-                pendingPayments.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Text('No pending payments'),
-                      )
-                    : Column(
-                        children: pendingPayments.map((payment) {
-                          return _buildPaymentCard(payment);
-                        }).toList(),
-                      ),
-                  const SizedBox(height: 20),
-                          
-                          // Add Spend Button with Animation
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: SizedBox(
-                      width: 280,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                                     PageRouteBuilder(
-                                      pageBuilder: (context, animation, secondaryAnimation) => 
-                                        AddSpendPage(
+                                  pageBuilder: (context, animation, secondaryAnimation) => AddSpendPage(
                                           name: widget.name, 
                                           remainingBalance: remainingBalance,
                                           showIncome: _showIncome,
@@ -794,10 +771,9 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                             borderRadius: BorderRadius.circular(30),
                           ),
                                   elevation: 5,
+                              padding: const EdgeInsets.symmetric(vertical: 15.0),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 15.0),
-                          child: Text(
+                            child: const Text(
                             'Add Spend',
                             style: TextStyle(
                               color: Colors.white,
@@ -807,21 +783,15 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                          
-                          // Smart Split Button with Animation
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: SizedBox(
-                      width: 280,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                                     PageRouteBuilder(
-                                      pageBuilder: (context, animation, secondaryAnimation) => 
-                                        SplitPage(
+                                  pageBuilder: (context, animation, secondaryAnimation) => SplitPage(
                                           name: widget.name, 
                                           remainingBalance: remainingBalance,
                                           showIncome: _showIncome,
@@ -844,10 +814,9 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                             borderRadius: BorderRadius.circular(30),
                           ),
                                   elevation: 5,
+                              padding: const EdgeInsets.symmetric(vertical: 15.0),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 15.0),
-                          child: Text(
+                            child: const Text(
                             'Smart Split',
                             style: TextStyle(
                               color: Colors.white,
@@ -856,6 +825,81 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                           ),
                         ),
                       ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Pending Payment',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  pendingPayments.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text('No pending payments'),
+                        )
+                      : Column(
+                          children: pendingPayments.map((payment) {
+                            return _buildPaymentCard(payment);
+                          }).toList(),
+                        ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Expense Analysis',
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        if (isAnalysisLoading)
+                          Center(child: CircularProgressIndicator()),
+                        if (!isAnalysisLoading && analysisData.isEmpty)
+                          Center(child: Text('No analysis data available', style: TextStyle(color: Colors.grey))),
+                        if (!isAnalysisLoading && analysisData.isNotEmpty)
+                          AspectRatio(
+                            aspectRatio: 1.3,
+                            child: PieChart(
+                              PieChartData(
+                                sections: analysisData.map((item) {
+                                  final color = _getCategoryColor(item['category'] ?? '');
+                                  final value = (item['amount'] is num)
+                                      ? (item['amount'] as num).toDouble()
+                                      : double.tryParse(item['amount'].toString()) ?? 0;
+                                  final percent = totalSpend > 0 ? (value / totalSpend * 100).toStringAsFixed(1) : '0';
+                                  return PieChartSectionData(
+                                    color: color,
+                                    value: value,
+                                    title: '${item['category']} $percent%',
+                                    radius: 60,
+                                    titleStyle: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                    titlePositionPercentageOffset: 1.25,
+                                  );
+                                }).toList(),
+                                sectionsSpace: 2,
+                                centerSpaceRadius: 40,
+                                startDegreeOffset: 0,
+                              ),
+                              swapAnimationDuration: const Duration(milliseconds: 1200),
+                              swapAnimationCurve: Curves.easeOutExpo,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -896,7 +940,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       }
       return Container(
         color: Colors.grey[50],
-        child: Column(
+            child: Column(
           children: [
             // Offline banner if needed (but without the duplicate header)
             if (_isOffline)
@@ -921,7 +965,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                           fontSize: 13,
                         ),
                       ),
-                    ),
+                ),
                   ],
                 ),
               ),
@@ -938,45 +982,45 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                     ),
                   )
                 : (historyData.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Lottie.network(
-                              'https://assets7.lottiefiles.com/packages/lf20_VrYnXA.json',
-                              width: 200,
-                              height: 200,
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'No transactions yet',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Your transaction history will appear here',
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                color: Colors.grey[500],
-                              ),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Lottie.network(
+                          'https://assets7.lottiefiles.com/packages/lf20_VrYnXA.json',
+                          width: 200,
+                          height: 200,
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: historyData.length,
-                        itemBuilder: (context, index) {
+                        const SizedBox(height: 20),
+                        Text(
+                          'No transactions yet',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Your transaction history will appear here',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: historyData.length,
+                    itemBuilder: (context, index) {
                           final item = historyData[index];
                           return _buildHistoryCard(item);
                         },
                         padding: const EdgeInsets.only(bottom: 24),
                       )
-                  ),
             ),
+          ),
           ],
         ),
       );
@@ -1784,6 +1828,34 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
         ),
       ),
     );
+  }
+
+  // Fetch analysis data
+  Future<void> _fetchAnalysisData() async {
+    setState(() {
+      isAnalysisLoading = true;
+    });
+    try {
+      final url = Uri.parse('http://localhost:8080/api/expense-analysis/${widget.name}');
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          analysisData = List<Map<String, dynamic>>.from(data);
+          isAnalysisLoading = false;
+        });
+      } else {
+        setState(() {
+          analysisData = [];
+          isAnalysisLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        analysisData = [];
+        isAnalysisLoading = false;
+      });
+    }
   }
 }
 
