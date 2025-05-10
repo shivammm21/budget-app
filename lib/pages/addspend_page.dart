@@ -188,19 +188,14 @@ class _AddSpendPageState extends State<AddSpendPage> with TickerProviderStateMix
     _buttonController.reset();
     _buttonController.forward();
     HapticFeedback.mediumImpact();
-    
     setState(() {
       _isButtonPressed = true;
     });
-    
     await Future.delayed(const Duration(milliseconds: 200));
-    
     setState(() {
       _isButtonPressed = false;
     });
-    
     String username = widget.name;
-
     // Validate inputs
     if (amount <= 0) {
       setState(() {
@@ -208,89 +203,60 @@ class _AddSpendPageState extends State<AddSpendPage> with TickerProviderStateMix
       });
       return;
     }
-    
-    // If 'Other' category is selected, validate its input
     if (selectedCategory == 'Other' && otherCategory.isEmpty) {
       setState(() {
         errorMessage = 'Please specify the other category.';
       });
       return;
     }
-
-    // Clear any previous error messages
     setState(() {
       errorMessage = '';
     });
-
     final categoryToSend = selectedCategory == 'Other' ? otherCategory : selectedCategory;
-
     Map<String, dynamic> transaction = {
       'username': username,
       'spendAmt': amount.toString(),
       'category': categoryToSend,
-      'timestamp': DateTime.now().toString(),
       'place': selectedPlace,
+      'participants': [], // Always include this field
     };
-
     try {
-      // First save to local database (works offline)
-      await _dbHelper.addTransaction(transaction);
-      
-      // Try to sync immediately if online
-      if (_connectivityService.isOnline) {
-        _syncService.syncData();
-      }
-      
-      // Play success animation regardless of connection status
-      _confettiController.play();
-      
-      // Show appropriate message
-      if (_isOffline) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Spend saved offline. Will sync when online.'),
-          backgroundColor: Colors.orange,
-          duration: Duration(seconds: 3),
-        ));
-      } else {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/api/add-spend'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(transaction),
+      );
+      if (response.statusCode == 200) {
+        _confettiController.play();
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Spend added successfully!'),
           backgroundColor: Colors.green,
         ));
-      }
-
-      // Short delay to show the celebration animation before navigating
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // Calculate new remaining balance from local data
-      double updatedRemainingBalance = await _dbHelper.calculateRemainingBalance(username);
-
-        // Pass variables to DashboardPage
+        await Future.delayed(const Duration(seconds: 1));
         Navigator.pushReplacement(
           context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => 
-            DashboardPage(
+          MaterialPageRoute(
+            builder: (context) => DashboardPage(
               name: widget.name,
               amount: amount,
               category: categoryToSend,
               timestamp: DateTime.now(),
             ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = const Offset(1.0, 0.0);
-            var end = Offset.zero;
-            var curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(position: offsetAnimation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 500),
-        ),
-      );
+          ),
+        );
+      } else {
+        setState(() {
+          errorMessage = 'Failed to add spend: [31m${response.body}[0m';
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Failed to add spend.'),
+          backgroundColor: Colors.red,
+        ));
+      }
     } catch (e) {
       setState(() {
         errorMessage = 'Error: $e';
       });
-      
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Failed to save transaction.'),
         backgroundColor: Colors.red,

@@ -58,6 +58,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   final SyncService _syncService = SyncService();
   bool _isOffline = false;
   String _syncStatus = '';
+  String? _historyError;
 
   @override
   void initState() {
@@ -248,24 +249,25 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   List<Map<String, dynamic>> historyData = [];
 
   Future<void> _fetchHistoryData() async {
-    print(widget.name);
     final url = Uri.parse('http://localhost:8080/api/dashboard/history/${widget.name}');
-
     try {
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         setState(() {
           historyData = List<Map<String, dynamic>>.from(data);
+          _historyError = null;
         });
       } else {
-        throw Exception('Failed to load history data');
+        setState(() {
+          _historyError = 'Failed to load history data';
+          historyData = [];
+        });
       }
     } catch (e) {
-      print('Error fetching history data: $e');
       setState(() {
-        historyData = []; // Initialize with empty list on error
+        _historyError = 'Error: [31m${e.toString()}[0m';
+        historyData = [];
       });
     }
   }
@@ -894,7 +896,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       }
       return Container(
         color: Colors.grey[50],
-            child: Column(
+        child: Column(
           children: [
             // Offline banner if needed (but without the duplicate header)
             if (_isOffline)
@@ -919,153 +921,62 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                           fontSize: 13,
                         ),
                       ),
-                ),
+                    ),
                   ],
                 ),
               ),
-            
             // Expanded list of transactions
             Expanded(
-              child: historyData.isEmpty 
+              child: _historyError != null
                 ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Lottie.network(
-                          'https://assets7.lottiefiles.com/packages/lf20_VrYnXA.json',
-                          width: 200,
-                          height: 200,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          'No transactions yet',
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Your transaction history will appear here',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                        ),
-                      ],
+                    child: SingleChildScrollView(
+                      child: Text(
+                        _historyError!,
+                        style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   )
-                : ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-                    itemCount: historyData.length,
-                    itemBuilder: (context, index) {
-                      // Extract transaction data
-                      final transaction = historyData[index];
-                      String category = transaction['category'] ?? 'Uncategorized';
-                      double amount = double.tryParse(transaction['spendAmt']?.toString() ?? '0') ?? 0;
-                      
-                      // Parse timestamp
-                      DateTime timestamp = transaction['created_at'] != null 
-                        ? DateTime.parse(transaction['created_at']) 
-                        : DateTime.now();
-                        
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                  color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.purple.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(16),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(16),
-                            onTap: () {
-                              // Could add transaction details view here
-                              HapticFeedback.lightImpact();
-                            },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                : (historyData.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 40,
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              color: _getCategoryColor(category).withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            child: Icon(
-                                              _getCategoryIcon(category),
-                                              color: _getCategoryColor(category),
-                                              size: 20,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                            Text(
-                              category,
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black87,
-                                            ),
-                                          ),
-                                        ],
+                            Lottie.network(
+                              'https://assets7.lottiefiles.com/packages/lf20_VrYnXA.json',
+                              width: 200,
+                              height: 200,
                             ),
+                            const SizedBox(height: 20),
                             Text(
-                                        '-₹${amount.toStringAsFixed(0)}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600,
-                                color: Colors.red,
+                              'No transactions yet',
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Your transaction history will appear here',
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.grey[500],
                               ),
                             ),
                           ],
                         ),
-                                  const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                        '${_formatDate(timestamp)}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
-                                        ),
-                            ),
-                            Text(
-                                        '${_formatTime(timestamp)}',
-                                        style: GoogleFonts.poppins(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
-                                        ),
-                            ),
-                          ],
-                        ),
-                      ],
-                              ),
-                            ),
-                    ),
+                      )
+                    : ListView.builder(
+                        itemCount: historyData.length,
+                        itemBuilder: (context, index) {
+                          final item = historyData[index];
+                          return _buildHistoryCard(item);
+                        },
+                        padding: const EdgeInsets.only(bottom: 24),
+                      )
                   ),
-                );
-                    },
             ),
-          ),
           ],
         ),
       );
@@ -1747,6 +1658,132 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
     final minute = date.minute.toString().padLeft(2, '0');
     final period = date.hour >= 12 ? 'PM' : 'AM';
     return '$hour:$minute $period';
+  }
+
+  Widget _buildHistoryList(List<Map<String, dynamic>> history) {
+    return ListView.builder(
+      reverse: false, // latest first, since backend is DESC
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: history.length,
+      itemBuilder: (context, index) {
+        final item = history[index];
+        return _buildHistoryCard(item);
+      },
+    );
+  }
+
+  Widget _buildHistoryCard(Map<String, dynamic> item) {
+    final amount = item['spendAmt']?.toString() ?? '0';
+    final place = item['place'] ?? 'Unknown';
+    final category = item['category'] ?? 'Uncategorized';
+    final splitUsers = item['splitUsers'] as List<dynamic>? ?? [];
+    // Determine if this is a credit or debit
+    // If there is a 'type' field, use it; otherwise, default to debit (red)
+    // You can enhance this logic if you add a 'type' or 'isCredit' field in the future
+    bool isCredit = false;
+    if (item.containsKey('type')) {
+      isCredit = item['type'] == 'credit';
+    } else if (item.containsKey('isCredit')) {
+      isCredit = item['isCredit'] == true;
+    } else {
+      // If the user is in splitUsers and status is Settled, treat as credit
+      // Otherwise, treat as debit
+      // (You can enhance this logic based on your backend data)
+      isCredit = false;
+    }
+    final amountColor = isCredit ? Colors.green : Colors.red;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      child: Material(
+        elevation: 2,
+        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xFFF8F6FF), // Soft background
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(_getCategoryIcon(category), color: Colors.deepPurple, size: 22),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        category,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    (isCredit ? '+₹' : '-₹') + amount,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: amountColor),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.place, color: Colors.blueGrey, size: 18),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'Place: $place',
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (splitUsers.isNotEmpty) ...[
+                const Text('Split with:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: splitUsers.map((user) {
+                    final u = user as Map<String, dynamic>;
+                    final status = u['status'] == 'True' ? 'Settled' : 'Pending';
+                    final color = u['status'] == 'True' ? Colors.green : Colors.orange;
+                    return Chip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            u['status'] == 'True' ? Icons.check_circle : Icons.hourglass_bottom,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${u['user']} (${status})',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                          ),
+                        ],
+                      ),
+                      backgroundColor: color,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

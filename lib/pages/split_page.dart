@@ -46,6 +46,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
   List<TextEditingController> splitControllers = [];
   List<List<String>> userSuggestions = [];
   List<FocusNode> splitFocusNodes = [];
+  List<bool> isPlus = [];
 
   // Animation controller
   late AnimationController _animationController;
@@ -116,6 +117,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
       splitControllers = List.generate(splitCount, (index) => TextEditingController());
       userSuggestions = List.generate(splitCount, (index) => []);
       splitFocusNodes = List.generate(splitCount, (index) => FocusNode());
+      isPlus = List.generate(splitCount, (index) => true);
     });
   }
   
@@ -266,19 +268,25 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
   }
 
   Future<void> fetchUserSuggestions(String query, int index) async {
-    if (!query.contains('@') || query.split('@').last.length < 2) {
+    if (query.isEmpty) {
       setState(() {
         userSuggestions[index] = [];
       });
       return;
     }
-    final response = await http.get(
-      Uri.parse('http://localhost:8080/api/user-suggestions?q=${Uri.encodeComponent(query)}'),
-    );
+    final isMobile = RegExp(r'^\d{10}\$').hasMatch(query);
+    final url = isMobile
+        ? Uri.parse('http://localhost:8080/api/user-suggestions?q=$query')
+        : Uri.parse('http://localhost:8080/api/user-suggestions?q=${Uri.encodeComponent(query)}');
+    final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> suggestions = jsonDecode(response.body);
       setState(() {
         userSuggestions[index] = suggestions.cast<String>();
+      });
+    } else {
+      setState(() {
+        userSuggestions[index] = [];
       });
     }
   }
@@ -805,7 +813,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
                                               filled: true,
                                               fillColor: Colors.white,
                                               border: InputBorder.none,
-                                              hintText: 'Enter Username ${index + 1}',
+                                              hintText: 'Enter Username or Mobile',
                                               hintStyle: GoogleFonts.poppins(
                                                 color: Colors.grey.shade400,
                                                 fontWeight: FontWeight.w400,
@@ -813,10 +821,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
                                               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                                             ),
                                             keyboardType: TextInputType.emailAddress,
-                                            onChanged: (value) {
-                                              fetchUserSuggestions(value, index);
-                                              HapticFeedback.selectionClick();
-                                            },
+                                            onChanged: (value) => fetchUserSuggestions(value, index),
                                           ),
                                           if (userSuggestions[index].isNotEmpty && splitFocusNodes[index].hasFocus)
                                             Positioned(
@@ -831,9 +836,18 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
                                                   children: userSuggestions[index].map((suggestion) {
                                                     return ListTile(
                                                       title: Text(suggestion),
-                                                      onTap: () {
+                                                      onTap: () async {
                                                         setState(() {
-                                                          splitControllers[index].text = suggestion;
+                                                          // If suggestion is in the format 'Name (MobileNumber)', extract the mobile number
+                                                          final match = RegExp(r'\((\d{10})\)').firstMatch(suggestion);
+                                                          if (match != null) {
+                                                            final mobile = match.group(1)!;
+                                                            splitControllers[index].text = mobile;
+                                                            // Call backend to get user ID/email for this mobile
+                                                            fetchAndReplaceWithUserId(mobile, index);
+                                                          } else {
+                                                            splitControllers[index].text = suggestion;
+                                                          }
                                                           userSuggestions[index] = [];
                                                         });
                                                         FocusScope.of(context).unfocus();
@@ -1097,5 +1111,16 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
         ),
       ),
     );
+  }
+
+  // Add this method to fetch and replace with user ID/email
+  Future<void> fetchAndReplaceWithUserId(String mobile, int index) async {
+    final url = Uri.parse('http://localhost:8080/api/user-id-by-mobile?mobile=$mobile');
+    final response = await http.get(url);
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      setState(() {
+        splitControllers[index].text = response.body;
+      });
+    }
   }
 }

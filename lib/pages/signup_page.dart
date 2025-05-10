@@ -15,6 +15,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
   int amount = 0; // Example amount; replace with actual value
   String category = 'General'; // Example category; replace with actual value
   DateTime timestamp = DateTime.now();
@@ -45,14 +46,15 @@ class _SignupPageState extends State<SignupPage> {
     final url = Uri.parse('http://localhost:8080/api/register');
     final headers = {'Content-Type': 'application/json'};
 
-    final Map<String, String> body = {
+    final Map<String, dynamic> registrationData = {
       'name': nameController.text,
       'email': emailController.text,
       'password': passwordController.text,
+      'mobileNumber': _mobileController.text,
     };
 
     try {
-      final response = await http.post(url, headers: headers, body: json.encode(body));
+      final response = await http.post(url, headers: headers, body: json.encode(registrationData));
 
       if (response.statusCode == 201) {
         String email = emailController.text;
@@ -81,148 +83,164 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/images/signup_img.png'),
-                fit: BoxFit.cover,
+      backgroundColor: Color(0xFFF8F6FF),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 32),
+                child: ClipPath(
+                  clipper: _BlobClipper(),
+                  child: Container(
+                    width: 180,
+                    height: 120,
+                    color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        'Sign up',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 250),
-                  // Name Input Field
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      labelStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      suffixIcon: const Icon(Icons.person, color: Colors.deepOrange),
-                    ),
+              SizedBox(height: 8),
+              // Name field
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  prefixIcon: Icon(Icons.person, color: Colors.red),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
                   ),
-                  const SizedBox(height: 25),
-                  // Email Input Field
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      suffixIcon: const Icon(Icons.email, color: Colors.deepOrange),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red, width: 2),
                   ),
-                  const SizedBox(height: 25),
-                  // Password Input Field with show/hide icon
-                  TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.deepOrange,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    obscureText: !_isPasswordVisible, // Toggle between showing/hiding password
+                ),
+              ),
+              SizedBox(height: 16),
+              // Email field
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email, color: Colors.red),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
                   ),
-                  const SizedBox(height: 37),
-                  // Sign Up Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: SizedBox(
-                      width: 280,
-                      child: ElevatedButton(
-                        onPressed: _registerUser,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepOrange,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 15.0),
-                          child: Text(
-                            'Signup',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red, width: 2),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Already Registered?',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ),
+                ),
+              ),
+              SizedBox(height: 16),
+              // Mobile number field
+              TextField(
+                controller: _mobileController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Mobile Number',
+                  prefixIcon: Icon(Icons.phone, color: Colors.red),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
                   ),
-                  const SizedBox(height: 0),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()),
-                      );
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red, width: 2),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              // Password field
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: Icon(Icons.lock, color: Colors.red),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.red,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
                     },
-                    child: const Text(
-                      'Login here',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16,
-                      ),
-                    ),
                   ),
-                  const SizedBox(height: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.red, width: 2),
+                  ),
+                ),
+                obscureText: !_isPasswordVisible,
+              ),
+              SizedBox(height: 24),
+              // Signup button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _registerUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text('Signup', style: TextStyle(color: Colors.white, fontSize: 18)),
+                ),
+              ),
+              SizedBox(height: 18),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Already Registered?', style: TextStyle(color: Colors.black87)),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    },
+                    child: Text('Login here', style: TextStyle(color: Colors.blue)),
+                  ),
                 ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
+}
+
+// Add a custom clipper for the blob shape
+class _BlobClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.moveTo(size.width * 0.5, 0);
+    path.quadraticBezierTo(size.width, 0, size.width, size.height * 0.5);
+    path.quadraticBezierTo(size.width, size.height, size.width * 0.5, size.height);
+    path.quadraticBezierTo(0, size.height, 0, size.height * 0.5);
+    path.quadraticBezierTo(0, 0, size.width * 0.5, 0);
+    return path;
+  }
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
