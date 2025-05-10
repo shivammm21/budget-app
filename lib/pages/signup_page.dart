@@ -15,10 +15,9 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController incomeController = TextEditingController();
-   int amount = 0; // Example amount; replace with actual value
-      String category = 'General'; // Example category; replace with actual value
-      DateTime timestamp = DateTime.now();
+  int amount = 0; // Example amount; replace with actual value
+  String category = 'General'; // Example category; replace with actual value
+  DateTime timestamp = DateTime.now();
 
   bool _isPasswordVisible = false; // To toggle password visibility
 
@@ -43,14 +42,13 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _registerUser() async {
-    final url = Uri.parse('http://192.168.31.230:8080/api/register');
+    final url = Uri.parse('http://localhost:8080/api/register');
     final headers = {'Content-Type': 'application/json'};
 
     final Map<String, String> body = {
       'name': nameController.text,
       'email': emailController.text,
       'password': passwordController.text,
-      'income': incomeController.text,
     };
 
     try {
@@ -166,25 +164,6 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                     obscureText: !_isPasswordVisible, // Toggle between showing/hiding password
-                  ),
-                  const SizedBox(height: 25),
-                  // Monthly Income Input Field
-                  TextField(
-                    controller: incomeController,
-                    decoration: InputDecoration(
-                      labelText: 'Monthly Income',
-                      labelStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.deepOrange, width: 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      suffixIcon: const Icon(Icons.attach_money, color: Colors.deepOrange),
-                    ),
-                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 37),
                   // Sign Up Button
