@@ -738,138 +738,96 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                     ),
                   ),
                   const SizedBox(height: 16.0), // Spacing between cards
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: SizedBox(
-                                    height:
-                                        50, // Set height for Add Spend button
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (context, animation,
-                                                    secondaryAnimation) =>
-                                                AddSpendPage(
-                                              name: widget.name,
-                                              remainingBalance:
-                                                  remainingBalance,
-                                              showIncome: _showIncome,
-                                            ),
-                                            transitionsBuilder: (context,
-                                                animation,
-                                                secondaryAnimation,
-                                                child) {
-                                              var begin =
-                                                  const Offset(1.0, 0.0);
-                                              var end = Offset.zero;
-                                              var curve = Curves.easeInOut;
-                                              var tween = Tween(
-                                                      begin: begin, end: end)
-                                                  .chain(
-                                                      CurveTween(curve: curve));
-                                              var offsetAnimation =
-                                                  animation.drive(tween);
-                                              return SlideTransition(
-                                                  position: offsetAnimation,
-                                                  child: child);
-                                            },
-                                            transitionDuration: const Duration(
-                                                milliseconds: 500),
-                                          ),
-                                        );
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                                    PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => AddSpendPage(
+                                          name: widget.name, 
+                                          remainingBalance: remainingBalance,
+                                          showIncome: _showIncome,
+                                        ),
+                                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                        var begin = const Offset(1.0, 0.0);
+                                        var end = Offset.zero;
+                                        var curve = Curves.easeInOut;
+                                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                        var offsetAnimation = animation.drive(tween);
+                                        return SlideTransition(position: offsetAnimation, child: child);
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.deepOrange,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        elevation: 5,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 15.0),
-                                      ),
-                                      child: const Text(
-                                        'Add Spend',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: SizedBox(
-                                    height:
-                                        50, // Set height for Smart Split button
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (context, animation,
-                                                    secondaryAnimation) =>
-                                                SplitPage(
-                                              name: widget.name,
-                                              remainingBalance:
-                                                  remainingBalance,
-                                              showIncome: _showIncome,
-                                            ),
-                                            transitionsBuilder: (context,
-                                                animation,
-                                                secondaryAnimation,
-                                                child) {
-                                              var begin =
-                                                  const Offset(1.0, 0.0);
-                                              var end = Offset.zero;
-                                              var curve = Curves.easeInOut;
-                                              var tween = Tween(
-                                                      begin: begin, end: end)
-                                                  .chain(
-                                                      CurveTween(curve: curve));
-                                              var offsetAnimation =
-                                                  animation.drive(tween);
-                                              return SlideTransition(
-                                                  position: offsetAnimation,
-                                                  child: child);
-                                            },
-                                            transitionDuration: const Duration(
-                                                milliseconds: 500),
-                                          ),
-                                        );
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 34, 174, 255),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                        ),
-                                        elevation: 5,
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 15.0),
-                                      ),
-                                      child: const Text(
-                                        'Smart Split',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                                      transitionDuration: const Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepOrange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
-
+                                  elevation: 5,
+                              padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        ),
+                            child: const Text(
+                            'Add Spend',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                                    PageRouteBuilder(
+                                  pageBuilder: (context, animation, secondaryAnimation) => SplitPage(
+                                          name: widget.name, 
+                                          remainingBalance: remainingBalance,
+                                          showIncome: _showIncome,
+                                        ),
+                                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                        var begin = const Offset(1.0, 0.0);
+                                        var end = Offset.zero;
+                                        var curve = Curves.easeInOut;
+                                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                                        var offsetAnimation = animation.drive(tween);
+                                        return SlideTransition(position: offsetAnimation, child: child);
+                                      },
+                                      transitionDuration: const Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 34, 174, 255),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                                  elevation: 5,
+                              padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        ),
+                            child: const Text(
+                            'Smart Split',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 20),
                   Text(
                     'Pending Payment',
@@ -923,22 +881,18 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                                   return PieChartSectionData(
                                     color: color,
                                     value: value,
-                                    title: '${item['category']} $percent%',
+                                    title: '${item['category']}\n$percent%',
                                     radius: 60,
                                     titleStyle: GoogleFonts.poppins(
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 14,
+                                      fontSize: 13,
                                     ),
-                                    titlePositionPercentageOffset: 1.25,
                                   );
                                 }).toList(),
                                 sectionsSpace: 2,
                                 centerSpaceRadius: 40,
-                                startDegreeOffset: 0,
                               ),
-                              swapAnimationDuration: const Duration(milliseconds: 1200),
-                              swapAnimationCurve: Curves.easeOutExpo,
                             ),
                           ),
                       ],
@@ -1062,7 +1016,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                         padding: const EdgeInsets.only(bottom: 24),
                       )
             ),
-          ),
+            ),
           ],
         ),
       );
@@ -1764,18 +1718,12 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
     final place = item['place'] ?? 'Unknown';
     final category = item['category'] ?? 'Uncategorized';
     final splitUsers = item['splitUsers'] as List<dynamic>? ?? [];
-    // Determine if this is a credit or debit
-    // If there is a 'type' field, use it; otherwise, default to debit (red)
-    // You can enhance this logic if you add a 'type' or 'isCredit' field in the future
     bool isCredit = false;
     if (item.containsKey('type')) {
       isCredit = item['type'] == 'credit';
     } else if (item.containsKey('isCredit')) {
       isCredit = item['isCredit'] == true;
     } else {
-      // If the user is in splitUsers and status is Settled, treat as credit
-      // Otherwise, treat as debit
-      // (You can enhance this logic based on your backend data)
       isCredit = false;
     }
     final amountColor = isCredit ? Colors.green : Colors.red;
@@ -1785,7 +1733,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       child: Material(
         elevation: 2,
         borderRadius: BorderRadius.circular(18),
-        color: const Color(0xFFF8F6FF), // Soft background
+        color: const Color(0xFFF8F6FF),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
           child: Column(
@@ -1799,10 +1747,10 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(0.08),
+                          color: _getCategoryColor(category).withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(_getCategoryIcon(category), color: Colors.deepPurple, size: 22),
+                        child: Icon(_getCategoryIcon(category), color: _getCategoryColor(category), size: 22),
                       ),
                       const SizedBox(width: 10),
                       Text(
@@ -1831,10 +1779,8 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
               if (splitUsers.isNotEmpty) ...[
-                const Text('Split with:', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-                const SizedBox(height: 6),
+                const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,
@@ -1843,20 +1789,14 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                     final status = u['status'] == 'True' ? 'Settled' : 'Pending';
                     final color = u['status'] == 'True' ? Colors.green : Colors.orange;
                     return Chip(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            u['status'] == 'True' ? Icons.check_circle : Icons.hourglass_bottom,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${u['user']} (${status})',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-                          ),
-                        ],
+                      avatar: Icon(
+                        u['status'] == 'True' ? Icons.check_circle : Icons.hourglass_bottom,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      label: Text(
+                        u['user'],
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                       ),
                       backgroundColor: color,
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
