@@ -1016,7 +1016,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                         padding: const EdgeInsets.only(bottom: 24),
                       )
             ),
-            ),
+          ),
           ],
         ),
       );
