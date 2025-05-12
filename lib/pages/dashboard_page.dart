@@ -164,7 +164,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
     try {
       if (_connectivityService.isOnline) {
         // Online mode - fetch from server
-        final url = Uri.parse('http://localhost:8080/api/dashboard/${widget.name}');
+        final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/dashboard/${widget.name}');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -255,7 +255,7 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   List<Map<String, dynamic>> historyData = [];
 
   Future<void> _fetchHistoryData() async {
-    final url = Uri.parse('http://localhost:8080/api/dashboard/history/${widget.name}');
+    final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/dashboard/history/${widget.name}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -365,7 +365,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                     // Call backend to mark as settled
                     print(widget.name);
                     final response = await http.post(
-                      Uri.parse('http://localhost:8080/api/pay-split'),
+                      Uri.parse('https://budget-app-server-p43q.onrender.com/api/pay-split'),
                       headers: {'Content-Type': 'application/json'},
                       body: jsonEncode({
                         'username': widget.name, // current user
@@ -864,37 +864,92 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                         ),
                         const SizedBox(height: 12),
                         if (isAnalysisLoading)
-                          Center(child: CircularProgressIndicator()),
+                          const Center(
+                              child: CircularProgressIndicator()),
                         if (!isAnalysisLoading && analysisData.isEmpty)
-                          Center(child: Text('No analysis data available', style: TextStyle(color: Colors.grey))),
-                        if (!isAnalysisLoading && analysisData.isNotEmpty)
+                          const Center(
+                            child: Text(
+                              'No analysis data available',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        if (!isAnalysisLoading &&
+                            analysisData.isNotEmpty) ...[
                           AspectRatio(
                             aspectRatio: 1.3,
                             child: PieChart(
                               PieChartData(
                                 sections: analysisData.map((item) {
-                                  final color = _getCategoryColor(item['category'] ?? '');
+                                  final color = _getCategoryColor(
+                                      item['category'] ?? '');
                                   final value = (item['amount'] is num)
-                                      ? (item['amount'] as num).toDouble()
-                                      : double.tryParse(item['amount'].toString()) ?? 0;
-                                  final percent = totalSpend > 0 ? (value / totalSpend * 100).toStringAsFixed(1) : '0';
+                                      ? (item['amount'] as num)
+                                      .toDouble()
+                                      : double.tryParse(item['amount']
+                                      .toString()) ??
+                                      0;
                                   return PieChartSectionData(
                                     color: color,
                                     value: value,
-                                    title: '${item['category']}\n$percent%',
-                                    radius: 60,
-                                    titleStyle: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
+                                    title:
+                                    '', // Hide the text inside pie
+                                    radius: 120,
                                   );
                                 }).toList(),
                                 sectionsSpace: 2,
                                 centerSpaceRadius: 40,
+                                startDegreeOffset: 0,
                               ),
+                              swapAnimationDuration:
+                              const Duration(milliseconds: 1200),
+                              swapAnimationCurve: Curves.easeOutExpo,
                             ),
                           ),
+                          const SizedBox(height: 0),
+                          // Custom Legend with Arrows
+                          Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                            children: analysisData.map((item) {
+                              final color = _getCategoryColor(
+                                  item['category'] ?? '');
+                              final value = (item['amount'] is num)
+                                  ? (item['amount'] as num).toDouble()
+                                  : double.tryParse(
+                                  item['amount'].toString()) ??
+                                  0;
+                              final percent = totalSpend > 0
+                                  ? (value / totalSpend * 100)
+                                  .toStringAsFixed(1)
+                                  : '0';
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.arrow_right_alt,
+                                        color: color),
+                                    const SizedBox(width: 4),
+                                    Container(
+                                      width: 12,
+                                      height: 12,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: color,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${item['category']} - $percent%',
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ]
                       ],
                     ),
                   ),
@@ -1292,6 +1347,48 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
                   ),
                 ),
                 
+                // Add Reset Data Button with Animation - add this before the Logout button
+                SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.5),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(
+                    parent: _animationController,
+                    curve: Interval(0.45, 0.85, curve: Curves.easeOut),
+                  )),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 30),
+                    child: SizedBox(
+                      width: 200,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          _showResetConfirmationDialog(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          elevation: 8,
+                        ),
+                        icon: const Icon(
+                          Icons.restore,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        label: const Text(
+                          'Reset All Data',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                
                 // Logout Button with Animation
                 SlideTransition(
                   position: Tween<Offset>(
@@ -1468,7 +1565,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       
       // Try to update server if online
       if (_connectivityService.isOnline) {
-        final url = Uri.parse('http://localhost:8080/api/toggle-income-display');
+        final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/toggle-income-display');
         final response = await http.post(
           url,
           headers: {'Content-Type': 'application/json'},
@@ -1586,7 +1683,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       // If online, update server
       if (_connectivityService.isOnline) {
         // Update the income
-        final incomeUrl = Uri.parse('http://localhost:8080/api/update-monthly-income');
+        final incomeUrl = Uri.parse('https://budget-app-server-p43q.onrender.com/api/update-monthly-income');
         final incomeResponse = await http.post(
           incomeUrl,
           headers: {'Content-Type': 'application/json'},
@@ -1604,7 +1701,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
         }
         
         // Toggle the income display
-        final toggleUrl = Uri.parse('http://localhost:8080/api/toggle-income-display');
+        final toggleUrl = Uri.parse('https://budget-app-server-p43q.onrender.com/api/toggle-income-display');
         final toggleResponse = await http.post(
           toggleUrl,
           headers: {'Content-Type': 'application/json'},
@@ -1818,7 +1915,7 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
       isAnalysisLoading = true;
     });
     try {
-      final url = Uri.parse('http://localhost:8080/api/expense-analysis/${widget.name}');
+      final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/expense-analysis/${widget.name}');
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -1838,6 +1935,104 @@ Widget _buildPaymentCard(Map<String, dynamic> payment) {
         isAnalysisLoading = false;
       });
     }
+  }
+
+  // Add this function with the other methods
+  Future<void> _resetUserData() async {
+    try {
+      if (_isOffline) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cannot reset data while offline'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/reset-user-data');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'username': widget.name}),
+      );
+
+      if (response.statusCode == 200) {
+        // Reset local database as well
+        await _dbHelper.resetUserData(widget.name);
+        
+        setState(() {
+          totalSpend = 0;
+          pendingPayments = [];
+          remainingBalance = monthlyIncome;
+        });
+
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('All data has been reset successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to reset data. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error resetting data: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showResetConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Reset All Data',
+          style: TextStyle(color: Colors.red),
+        ),
+        content: const Text(
+          'This will permanently delete all your expenses, income records, and history. This action cannot be undone.\n\nAre you sure you want to continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _resetUserData();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text(
+              'Reset Everything',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

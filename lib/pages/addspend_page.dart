@@ -222,7 +222,7 @@ class _AddSpendPageState extends State<AddSpendPage> with TickerProviderStateMix
     };
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/add-spend'),
+        Uri.parse('https://budget-app-server-p43q.onrender.com/api/add-spend'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(transaction),
       );

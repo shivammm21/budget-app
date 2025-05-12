@@ -445,4 +445,76 @@ class DatabaseHelper {
       }
     });
   }
+
+  // Reset all data for a specific user
+  Future<bool> resetUserData(String username) async {
+    try {
+      if (kIsWeb) {
+        return await _resetUserDataWeb(username);
+      } else {
+        return await _resetUserDataMobile(username);
+      }
+    } catch (e) {
+      print('Error resetting user data: $e');
+      return false;
+    }
+  }
+
+  // Mobile implementation
+  Future<bool> _resetUserDataMobile(String username) async {
+    await _lock.synchronized(() async {
+      Database db = await database;
+      
+      // Delete all transactions for this user
+      await db.delete(
+        'transactions',
+        where: 'username = ?',
+        whereArgs: [username]
+      );
+      
+      // Delete all pending transactions for this user
+      await db.delete(
+        'pending_transactions',
+        where: 'username = ?',
+        whereArgs: [username]
+      );
+      
+      // Keep user settings but reset any calculated values if needed
+      // This allows the user to keep their preferences while clearing transaction history
+    });
+    return true;
+  }
+
+  // Web implementation
+  Future<bool> _resetUserDataWeb(String username) async {
+    // Get all transactions
+    List<String> allTransactions = _prefs?.getStringList(_prefKeyTransactions) ?? [];
+    List<String> remaining = [];
+    
+    // Keep only transactions not belonging to this user
+    for (String jsonString in allTransactions) {
+      Map<String, dynamic> transaction = jsonDecode(jsonString);
+      if (transaction['username'] != username) {
+        remaining.add(jsonString);
+      }
+    }
+    
+    // Update stored list
+    await _prefs?.setStringList(_prefKeyTransactions, remaining);
+    
+    // Do the same for pending transactions
+    List<String> allPendingTransactions = _prefs?.getStringList(_prefKeyPendingTransactions) ?? [];
+    List<String> remainingPending = [];
+    
+    for (String jsonString in allPendingTransactions) {
+      Map<String, dynamic> transaction = jsonDecode(jsonString);
+      if (transaction['username'] != username) {
+        remainingPending.add(jsonString);
+      }
+    }
+    
+    await _prefs?.setStringList(_prefKeyPendingTransactions, remainingPending);
+    
+    return true;
+  }
 } 

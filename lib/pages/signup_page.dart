@@ -43,7 +43,7 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _registerUser() async {
-    final url = Uri.parse('http://localhost:8080/api/register');
+    final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/register');
     final headers = {'Content-Type': 'application/json'};
 
     final Map<String, dynamic> registrationData = {

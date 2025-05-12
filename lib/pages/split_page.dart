@@ -206,7 +206,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
       );
 
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/split-expense'),
+        Uri.parse('https://budget-app-server-p43q.onrender.com/api/split-expense'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(payload),
       );
@@ -276,8 +276,8 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
     }
     final isMobile = RegExp(r'^\d{10}\$').hasMatch(query);
     final url = isMobile
-        ? Uri.parse('http://localhost:8080/api/user-suggestions?q=$query')
-        : Uri.parse('http://localhost:8080/api/user-suggestions?q=${Uri.encodeComponent(query)}');
+        ? Uri.parse('https://budget-app-server-p43q.onrender.com/api/user-suggestions?q=$query')
+        : Uri.parse('https://budget-app-server-p43q.onrender.com/api/user-suggestions?q=${Uri.encodeComponent(query)}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final List<dynamic> suggestions = jsonDecode(response.body);
@@ -1115,7 +1115,7 @@ class _SplitPageState extends State<SplitPage> with SingleTickerProviderStateMix
 
   // Add this method to fetch and replace with user ID/email
   Future<void> fetchAndReplaceWithUserId(String mobile, int index) async {
-    final url = Uri.parse('http://localhost:8080/api/user-id-by-mobile?mobile=$mobile');
+    final url = Uri.parse('https://budget-app-server-p43q.onrender.com/api/user-id-by-mobile?mobile=$mobile');
     final response = await http.get(url);
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       setState(() {
