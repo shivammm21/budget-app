@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Budget App || Personal Finance Management</title>
+    <meta name="description" content="Budget Management App for tracking and managing daily, weekly, and monthly expenses" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png"/>
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- ========================= CSS here ========================= -->
+    <link rel="stylesheet" href="assets/css/bootstrap-5.0.0-beta2.min.css" />
+    <link rel="stylesheet" href="assets/css/LineIcons.2.0.css" />
+    <link rel="stylesheet" href="assets/css/tiny-slider.css" />
+    <link rel="stylesheet" href="assets/css/animate.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+  </head>
+  <body>
+    <!--[if lte IE 9]>
+      <p class="browserupgrade">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="https://browsehappy.com/">upgrade your browser</a> to improve
+        your experience and security.
+      </p>
+    <![endif]-->
+
+    <!-- ========================= preloader start ========================= -->
+    <div class="preloader">
+      <div class="loader">
+        <div class="spinner">
+          <div class="spinner-container">
+            <div class="spinner-rotator">
+              <div class="spinner-left">
+                <div class="spinner-circle"></div>
+              </div>
+              <div class="spinner-right">
+                <div class="spinner-circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+		<!-- preloader end -->
+		
+
+    <!-- ========================= header start ========================= -->
+    <header class="header">
+      <div class="navbar-area">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-12">
+              <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="index.html">
+                  <img src="assets/img/logo/logo.png" alt="Budget App Logo" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="toggler-icon"></span>
+                  <span class="toggler-icon"></span>
+                  <span class="toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
+                  <ul id="nav" class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                      <a class="page-scroll active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="page-scroll" href="#feature">Features</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="page-scroll" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="page-scroll" href="#tech">Technologies</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="page-scroll" href="#faq">FAQ</a>
+                    </li>
+                  </ul>
+                </div>
+                <!-- navbar collapse -->
+              </nav>
+              <!-- navbar -->
+            </div>
+          </div>
+          <!-- row -->
+        </div>
+        <!-- container -->
+      </div>
+      <!-- navbar area -->
+    </header>
+    <!-- ========================= header end ========================= -->
+
+    <!-- ========================= hero-section start ========================= -->
+    <section id="home" class="hero-section">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <div class="hero-content">
+              <h1 class="wow fadeInUp" data-wow-delay=".2s">
+                Smart Budget Management For Your Personal Finance
+              </h1>
+              <p class="wow fadeInUp" data-wow-delay=".4s">
+                Track your daily, weekly, and monthly expenses with ease. Set budgets, monitor spending, and gain control over your finances with our intuitive budget management app.
+              </p>
+             
+			  <div class="d-flex flex-wrap gap-3">
+                <a href="#feature" class="main-btn btn-hover wow fadeInUp page-scroll" data-wow-delay=".6s">Get Started</a>
+                <a href="assets/budget.apk" download class="main-btn btn-hover wow fadeInUp" data-wow-delay=".7s" style="display: inline-flex; align-items: center;">
+                  <i class="lni lni-download me-2"></i>Download Now
+                </a>
+                <a href="https://github.com/shivammm21/budget-app" target="_blank" class="main-btn btn-hover wow fadeInUp" data-wow-delay=".8s" style="display: inline-flex; align-items: center;">
+                  <i class="lni lni-github-original me-2"></i>View on GitHub
+                </a>
+              </div>
+			</div>
+          </div>
+          <div class="col-lg-6">
+            <div class="hero-img wow fadeInUp" data-wow-delay=".5s">
+              <img style="height: 630px;width: 545px;" src="assets/img/hero/hero-img-1.png" alt="" class="img-1">
+              <!-- <img style="height: 630px;width: 545px;" src="assets/img/hero/hero-img-2.png" alt="" class="img-2">
+              <img style="height: 600px;width: 545px;" src="assets/img/hero/hero-img-3.png" alt="" class="img-3"> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+		<!-- ========================= hero-section end ========================= -->
+
+		<!-- ========================= client-logo-section start ========================= -->
+		<section class="client-logo-section pt-100 pb-100">
+			<div class="container">
+				<div class="row justify-content-center mb-55">
+					<div class="col-xl-6 col-lg-8">
+						<div class="section-title text-center">
+							<h1 class="mb-25">Get The App Now</h1>
+							<p>Download our Budget App for Android devices</p>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center">
+					
+					<div class="text-center">
+						<a href="assets/budget.apk" download class="main-btn btn-hover" style="padding: 15px 30px; font-size: 18px; display: inline-flex; align-items: center; justify-content: center;">
+							<i class="lni lni-download me-2"></i> Download Now
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= client-logo-section end ========================= -->
+
+		<!-- ========================= feature-section start ========================= -->
+		<section id="feature" class="feature-section pt-140">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-xxl-5 col-xl-6 col-lg-7">
+						<div class="section-title text-center mb-30">
+							<h1 class="mb-25 wow fadeInUp" data-wow-delay=".2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">Key Features</h1>
+							<p class="wow fadeInUp" data-wow-delay=".4s" style="visibility: visible; animation-delay: 0.4s; animation-name: fadeInUp;">Manage your personal finances with precision using our comprehensive budget management tools.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row justify-content-center">
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-1">
+								<i class="lni lni-calculator"></i>
+							</div>
+							<div class="content">
+								<h3>Expense Tracking</h3>
+								<p>Easily add and categorize your expenses. Input the amount, select a category, and specify the date to keep track of all your spending in one place.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-2">
+								<i class="lni lni-bar-chart"></i>
+							</div>
+							<div class="content">
+								<h3>Visual Analytics</h3>
+								<p>Get a clear breakdown of your expenses through interactive charts and graphs. Understand where your money is going with dynamic pie charts and bar graphs for each category.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-3">
+								<i class="lni lni-target"></i>
+							</div>
+							<div class="content">
+								<h3>Budget Limits</h3>
+								<p>Set daily, weekly, or monthly budget limits for different categories. Stay on track with your financial goals and avoid overspending with timely notifications.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row justify-content-center mt-5">
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-1">
+								<i class="lni lni-dashboard"></i>
+							</div>
+							<div class="content">
+								<h3>Real-time Summary</h3>
+								<p>View up-to-the-minute summaries of your spending with real-time updates. Know exactly how much you've spent and how much of your budget remains.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-2">
+								<i class="lni lni-grid-alt"></i>
+							</div>
+							<div class="content">
+								<h3>Custom Categories</h3>
+								<p>Create personalized expense categories to organize your spending in ways that make sense for your lifestyle. Add, edit, or remove categories as needed.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-8 col-sm-10">
+						<div class="single-feature">
+							<div class="icon color-3">
+								<i class="lni lni-cloud-sync"></i>
+							</div>
+							<div class="content">
+								<h3>Cloud Sync</h3>
+								<p>Access your financial data across all your devices with secure cloud synchronization. Your budget information stays up-to-date everywhere you go.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= feature-section end ========================= -->
+
+		<!-- ========================= video-section start ========================= -->
+		<section id="about" class="about-section pt-150" style="background: #ffffff; padding-top: 0px; min-height: 100vh;">
+			<div class="container-fluid p-0"> <!-- Full width -->
+				<div class="row m-0 justify-content-center align-items-center" style="min-height: 100vh; display: flex;">
+					<video id="about-video" style="width: 70%; height: auto; object-fit: cover;" src="assets/img/hero/video.mp4"
+						muted playsinline loop></video>
+				</div>
+			</div>
+		</section>
+
+		
+		<script>
+			const video = document.getElementById('about-video');
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							video.play();
+						} else {
+							video.pause();
+						}
+					});
+				},
+				{ threshold: 0.5 }
+			);
+
+			observer.observe(video);
+		</script>
+
+		<!-- ========================= video-section end ========================= -->
+
+		<!-- ========================= about-section start ========================= -->
+		<section id="about" class="about-section pt-100" style="background: #f8f9fa;">
+			<div class="container">
+				<div class="row align-items-center" style="min-height: 400px;">
+					<div class="col-lg-6 d-flex justify-content-center align-items-center">
+						<div class="about-img mb-50" style="width: 320px; height: 240px; background: #ffffff; display: flex; align-items: center; justify-content: center; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);">
+							<!-- If image is missing, show a placeholder SVG -->
+							<img src="assets/img/favicon.png" alt="about" style="max-width: 80%; max-height: 80%; display: block;" onerror="this.style.display='none';this.parentNode.innerHTML='<svg width=120 height=120 viewBox=\'0 0 24 24\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><rect width=24 height=24 rx=12 fill=\'#6366f1\'/><text x=12 y=16 text-anchor=\'middle\' fill=\'white\' font-size=\'10\' font-family=\'Arial\'>About</text></svg>';"/>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="about-content mb-50">
+							<div class="section-title mb-50">
+								<h1 class="mb-25">About Budget App</h1>
+								<p>The Budget Management App is designed to help users effectively manage their daily, weekly, and monthly expenses. It enables users to track their spending across various categories, set budgets, and visualize their expenses over time.</p>
+							</div>
+							<div class="accordion pb-15" id="accordionExample">
+								<div class="single-faq card mb-2">
+									<button class="w-100 card-header text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" style="background:#fff; border:none; font-weight:600;">
+										Why use our Budget App?
+									</button>
+									<div id="collapseOne" class="collapse" data-bs-parent="#accordionExample">
+										<div class="faq-content card-body">
+											Our Budget App provides a comprehensive solution for personal finance management. It helps you gain control over your finances, monitor spending habits, and work toward your financial goals with intuitive tools and visual analytics.
+										</div>
+									</div>
+								</div>
+								<div class="single-faq card mb-2">
+									<button class="w-100 card-header text-start" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" style="background:#fff; border:none; font-weight:600;">
+										Who can benefit from this app?
+									</button>
+									<div id="collapseTwo" class="collapse" data-bs-parent="#accordionExample">
+										<div class="faq-content card-body">
+											Anyone looking to manage their finances better can benefit from our app, including students, professionals, families, and small business owners. It's user-friendly and adaptable to different financial needs and goals.
+										</div>
+									</div>
+								</div>
+							</div>
+							<a href="#feature" class="main-btn btn-hover">Explore Features</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= about-section end ========================= -->
+
+		<!-- ========================= tech-section start ========================= -->
+		<section id="tech" class="service-section pt-150">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-xl-6 col-lg-8">
+						<div class="section-title text-center mb-55">
+							<h1 class="mb-25">Technologies Used</h1>
+							<p>Our Budget App is built using modern technologies to ensure a smooth, responsive, and secure user experience.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-mobile"></i>
+							</div>
+							<div class="content">
+								<h3>Flutter</h3>
+								<p>User interface built with Flutter, providing a smooth and responsive experience on both Android and iOS platforms.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-code"></i>
+							</div>
+							<div class="content">
+								<h3>Dart</h3>
+								<p>Programming language used to develop Flutter apps. Dart's fast performance and compilation enhance the app's speed and efficiency.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-cog"></i>
+							</div>
+							<div class="content">
+								<h3>Java Spring Boot</h3>
+								<p>Backend built with Java Spring Boot to provide RESTful APIs for handling user data, budgets, and expenses.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-database"></i>
+							</div>
+							<div class="content">
+								<h3>MySQL</h3>
+								<p>Robust relational database used for storing user data, expense records, categories, and budget limits.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-cloud-check"></i>
+							</div>
+							<div class="content">
+								<h3>Cloud Integration</h3>
+								<p>Data synchronization across multiple devices with secure cloud storage ensures access to expense records anywhere.</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="single-service">
+							<div class="icon">
+								<i class="lni lni-lock"></i>
+							</div>
+							<div class="content">
+								<h3>Secure Authentication</h3>
+								<p>Protected user authentication ensures your personal financial data remains private and secure.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= tech-section end ========================= -->
+
+		<!-- ========================= developers-section start ========================= -->
+		<section id="developers" class="developers-section pt-80 pb-80" style="background: #f8f9fa;">
+			<div class="section-title text-center mb-55">
+				<h1 class="mb-25">Meet the Developers</h1>
+				<p>Our Budget App is built by two passionate developers who are dedicated to providing a smooth, responsive, and secure user experience.</p>
+			</div>
+			<div class="row justify-content-center" style="margin: 0;">
+				<div class="col-12 col-md-6 col-lg-5 mb-4 d-flex justify-content-center">
+					<div class="card text-center p-4 w-100" style="border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); max-width: 350px; align-items: center; margin: 0 auto;">
+						<img src="assets/img/dev/varun.jpeg" alt="Varun Thakare" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+						<h3 class="mb-2">Varun Thakare</h3>
+						<p class="mb-2">Frontend Developer</p>
+						<p style="font-size: 1em; color: #60698D;">I am Varun Thakare, passionate about building beautiful and user-friendly interfaces. I specialize in Flutter and modern web technologies to deliver seamless user experiences.</p>
+						<a href="https://www.linkedin.com/in/varun-thakare-2152942bb/" target="_blank" class="main-btn btn-hover mt-2" style="padding: 8px 24px; font-size: 1rem;"><i class="lni lni-linkedin-original"></i> LinkedIn</a>
+					</div>
+				</div>
+				<div class="col-12 col-md-6 col-lg-5 mb-4 d-flex justify-content-center">
+					<div class="card text-center p-4 w-100" style="border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); max-width: 350px; align-items: center; margin: 0 auto;">
+						<img src="assets/img/dev/shivam.jpeg" alt="Shivam Thorat" class="rounded-circle mb-3" style="width:120px;height:120px;object-fit:cover;">
+						<h3 class="mb-2">Shivam Thorat</h3>
+						<p class="mb-2">Backend Developer</p>
+						<p style="font-size: 1em; color: #60698D;">I am Shivam Thorat, dedicated to building robust and scalable backend systems. My expertise is in Java Spring Boot and database management for secure and efficient applications.</p>
+						<a href="https://www.linkedin.com/in/shivamthorat/" target="_blank" class="main-btn btn-hover mt-2" style="padding: 8px 24px; font-size: 1rem;"><i class="lni lni-linkedin-original"></i> LinkedIn</a>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= developers-section end ========================= -->
+
+		<!-- ========================= faq-section start ========================= -->
+		<section id="faq" class="faq-section pt-120">
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-xxl-5 col-xl-6 col-lg-7">
+						<div class="section-title text-center mb-60">
+							<h1 class="mb-25 wow fadeInUp" data-wow-delay=".2s">Frequently Asked Questions</h1>
+							<p class="mb-25 wow fadeInUp" data-wow-delay=".2s">Get answers to common questions about our Budget Management App.</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-6">
+						<div class="accordion faq-wrapper" id="faqAccordion">
+							<div class="single-faq">
+								<button class="w-100" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
+									Is my financial data secure?
+								</button>
+						
+								<div id="faqOne" class="collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+									<div class="faq-content">
+										Yes, your financial data is secured with industry-standard encryption protocols. We implement robust security measures to ensure your personal financial information remains private and protected.
+									</div>
+								</div>
+							</div>
+							<div class="single-faq">
+								<button class="w-100 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
+									Can I customize expense categories?
+								</button>
+								<div id="faqTwo" class="collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+									<div class="faq-content">
+										Absolutely! The app comes with predefined categories, but you can easily create, edit, or delete categories to match your specific needs and lifestyle.
+									</div>
+								</div>
+							</div>
+							<div class="single-faq">
+								<button class="w-100 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
+									How do I set up a budget limit?
+								</button>
+								<div id="faqThree" class="collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+									<div class="faq-content">
+										Setting up budget limits is simple. Navigate to the Budget section, select the category and time period (daily, weekly, or monthly), enter your desired limit amount, and save your settings.
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-lg-6">
+						<div class="accordion faq-wrapper" id="faqAccordionTwo">
+							<div class="single-faq">
+								<button class="w-100 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
+									Does the app work offline?
+								</button>
+								<div id="faqFour" class="collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordionTwo">
+									<div class="faq-content">
+										Yes, you can use the app offline to record expenses and view your existing data. When you reconnect to the internet, all your data will automatically sync to the cloud.
+									</div>
+								</div>
+							</div>
+							<div class="single-faq">
+								<button class="w-100 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFive" aria-expanded="false" aria-controls="faqFive">
+									Can I export my financial data?
+								</button>
+								<div id="faqFive" class="collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordionTwo">
+									<div class="faq-content">
+										Yes, you can export your financial data in multiple formats including CSV, PDF, and Excel. This feature is useful for tax preparation or further analysis.
+									</div>
+								</div>
+							</div>
+							<div class="single-faq">
+								<button class="w-100 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqSix" aria-expanded="false" aria-controls="faqSix">
+									Is the app available for both Android and iOS?
+								</button>
+								<div id="faqSix" class="collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordionTwo">
+									<div class="faq-content">
+										Yes, our Budget Management App is available for both Android and iOS devices. It's built with Flutter to ensure a consistent user experience across all platforms.
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ========================= faq-section end ========================= -->
+
+    <!-- ========================= footer start ========================= -->
+    <footer id="footer" class="footer">
+			<div class="container">
+				<div class="row">
+					<div class="col-lg-4 col-md-6">
+						<div class="footer-widget">
+							<div class="logo">
+								<a href="index.html">
+									<img style="height: 55px;width: 170px;margin-top: -15px;" src="assets/img/logo/logo.png" alt="Budget App Logo">
+								</a>
+							</div>
+							<p style="margin-top: -20px;">The Budget Management App is designed to help users effectively manage their daily, weekly, and monthly expenses.</p>
+						</div>
+					</div>
+					<div class="col-lg-4 col-md-6">
+						<div class="footer-widget">
+							<h3>Contact</h3>
+							<ul class="links">
+								<li><a href="https://github.com/shivammm21/budget-app" target="_blank"><i class="lni lni-github-original"></i> GitHub Repository</a></li>
+								<li><a href="https://www.linkedin.com/in/shivamthorat/" target="_blank"><i class="lni lni-linkedin-original"></i> Shivam Thorat (Backend Developer)</a></li>
+								<li><a href="https://www.linkedin.com/in/varun-thakare-2152942bb/" target="_blank"><i class="lni lni-linkedin-original"></i> Varun Thakare (Frontend Developer)</a></li>
+								<li><a href="#"><i class="lni lni-map-marker"></i> Documentation</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="copyright-area">
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="copyright-text text-center">
+								<p>Budget Management App | Built with Flutter and Spring Boot | <a href="https://github.com/shivammm21/budget-app" rel="nofollow" target="_blank">GitHub Repository</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+    <!-- ========================= footer end ========================= -->
+
+    <!-- ========================= scroll-top ========================= -->
+    <a href="#" class="scroll-top">
+      <i class="lni lni-arrow-up"></i>
+    </a>
+
+    <!-- ========================= JS here ========================= -->
+    <script src="assets/js/bootstrap-5.0.0-beta2.min.js"></script>
+    <script src="assets/js/tiny-slider.js"></script>
+    <script src="assets/js/wow.min.js"></script>
+    <script src="assets/js/polifill.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>
