@@ -37,6 +37,7 @@ This project is ideal for those who want to gain control over their finances and
 
 [![Shivam-Thorat](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/99466385?v=4&w=150&h=150&mask=circle)](https://github.com/shivammm21)
 [![Varun-Thakare](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/160563687?v=4&w=150&h=150&mask=circle)](https://github.com/varunthakare)
+[![Pranit-Dhumal](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/160817394?v=4&w=150&h=150&mask=circle)](https://github.com/PranitDhumal08)
 
 
 <img src="screenshot/6.png" height="400">
